@@ -1,0 +1,73 @@
+# Critical Rules - MUST be validated before any action
+
+VALIDATION_REQUIREMENTS {
+    REQUIRED: Validate before each tool use
+    REQUIRED: Validate before each command
+    REQUIRED: Validate before each sequence
+    REQUIRED: Test with real data when possible
+    FORBIDDEN: Skip validation steps
+    FORBIDDEN: Assume success without verification
+}
+
+VERSION_CONTROL_REQUIREMENTS {
+    REQUIRED: Create one branch per endpoint
+    REQUIRED: Commit before making changes
+    REQUIRED: Use [endpoint] prefix in commits
+    REQUIRED: Complete validation before merge
+    FORBIDDEN: Work on multiple endpoints in parallel
+    FORBIDDEN: Merge without complete validation
+}
+
+SEQUENTIAL_CHANGE_REQUIREMENTS {
+    REQUIRED: Make one change at a time
+    REQUIRED: Complete testing before next change
+    REQUIRED: Document each change
+    REQUIRED: Verify no regression
+    FORBIDDEN: Batch multiple changes
+    FORBIDDEN: Start new change before validating current
+}
+
+ERROR_HANDLING_REQUIREMENTS {
+    REQUIRED: Stop immediately when new issues appear
+    REQUIRED: Document all issues
+    REQUIRED: Revert to last working state
+    REQUIRED: Validate fix before proceeding
+    FORBIDDEN: Continue with known issues
+    FORBIDDEN: Fix multiple errors in parallel
+}
+
+API_VALIDATION_REQUIREMENTS {
+    REQUIRED: Test with live switch
+    REQUIRED: Document actual responses
+    REQUIRED: Note discrepancies from docs
+    FORBIDDEN: Trust docs over testing
+    FORBIDDEN: Implement without validation
+}
+
+SCOPE_CONTROL_REQUIREMENTS {
+    REQUIRED: Stay focused on current endpoint
+    REQUIRED: Keep changes minimal
+    REQUIRED: Propose major changes separately
+    FORBIDDEN: Add unrelated features
+    FORBIDDEN: Make infrastructure changes during fixes
+}
+
+MCP_OPERATION_REQUIREMENTS {
+    REQUIRED: Use one MCP operation at a time
+    REQUIRED: Validate all MCP tool parameters
+    REQUIRED: Wait for operation confirmation
+    REQUIRED: Handle MCP errors explicitly
+    FORBIDDEN: Assume MCP operation success
+    FORBIDDEN: Chain MCP operations without validation
+}
+
+VALIDATION_SCRIPT_REQUIREMENTS {
+    REQUIRED: Run validate_endpoint.sh before implementation
+    REQUIRED: Run validate_helper.sh as checkpoint before completion
+    REQUIRED: Pass all checkpoint validations before moving to next endpoint
+    REQUIRED: Document validation results
+    REQUIRED: Address ALL validation failures
+    FORBIDDEN: Skip validation scripts
+    FORBIDDEN: Ignore validation warnings
+    FORBIDDEN: Move to new endpoint before passing checkpoint
+}

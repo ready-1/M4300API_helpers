@@ -1,0 +1,145 @@
+CRITICAL_RULES_VALIDATION_REQUIRED {
+    LOCATION: .clinerules.critical
+    REQUIRED: Validate before each tool use
+    REQUIRED: Validate before each command
+    REQUIRED: Validate before each sequence
+}
+
+OODA_LOOP_WORKFLOW {
+    REQUIRED: Follow OODA loop for all operations
+    REQUIRED: Document thinking in OODA structure
+    FORBIDDEN: Skip any OODA phase
+    
+    OBSERVE {
+        REQUIRED: Gather current implementation state
+        REQUIRED: Review relevant documentation
+        REQUIRED: Check live API behavior
+        REQUIRED: Note any discrepancies
+        FORBIDDEN: Make assumptions without validation
+    }
+    
+    ORIENT {
+        REQUIRED: Analyze gathered information
+        REQUIRED: Consider project architecture
+        REQUIRED: Identify dependencies
+        REQUIRED: Assess potential impacts
+        FORBIDDEN: Skip impact analysis
+    }
+    
+    DECIDE {
+        REQUIRED: Outline specific approach
+        REQUIRED: Justify chosen approach
+        REQUIRED: Consider alternatives
+        REQUIRED: Break down into steps
+        FORBIDDEN: Proceed without clear plan
+    }
+    
+    ACT {
+        REQUIRED: Execute one tool at a time
+        REQUIRED: Wait for feedback after each action
+        REQUIRED: Validate results
+        REQUIRED: Document outcomes
+        FORBIDDEN: Multiple simultaneous actions
+    }
+}
+
+IMPLEMENTATION_WORKFLOW {
+    VALIDATION_SCRIPTS {
+        REQUIRED: Execute in correct order
+        REQUIRED: validate_endpoint.sh first for API validation
+        REQUIRED: validate_helper.sh as completion checkpoint
+        REQUIRED: Save all validation outputs
+        REQUIRED: Review and fix ALL warnings
+        
+        CHECKPOINT_VALIDATION {
+            REQUIRED: Run before considering endpoint complete
+            REQUIRED: Verify module structure
+            REQUIRED: Check code requirements
+            REQUIRED: Validate test coverage
+            REQUIRED: Confirm documentation
+            REQUIRED: Verify MCP integration
+        }
+    }
+
+    REQUIRED: Follow helper module template
+    REQUIRED: Base code on live API responses
+    REQUIRED: Handle undocumented fields
+    REQUIRED: Include example responses
+    FORBIDDEN: Implement without validation
+
+    MCP_INTEGRATION {
+        REQUIRED: Follow sequential operation pattern
+        REQUIRED: Document tool parameters
+        REQUIRED: Handle all error cases
+        REQUIRED: Verify operation results
+        REQUIRED: Log all MCP interactions
+    }
+    
+    STRUCTURE {
+        REQUIRED: Use dataclass for response types
+        REQUIRED: Include type hints
+        REQUIRED: Add docstrings
+        REQUIRED: Implement error handling
+        REQUIRED: Follow naming conventions
+    }
+    
+    TESTING {
+        REQUIRED: Create unit tests
+        REQUIRED: Create integration tests
+        REQUIRED: Test error cases
+        REQUIRED: Validate inputs
+        REQUIRED: Mock responses match schema
+    }
+}
+
+DEVELOPMENT_WORKFLOW {
+    ENVIRONMENT {
+        REQUIRED: Poetry virtual environment
+        REQUIRED: Basic pre-commit hooks
+        REQUIRED: VSCode integration
+    }
+
+    VERSION_CONTROL {
+        REQUIRED: One branch per endpoint
+        REQUIRED: Clear commit messages
+        REQUIRED: Complete validation before merge
+    }
+
+    ERROR_HANDLING {
+        REQUIRED: Basic error classes
+        REQUIRED: Error context in logs
+        REQUIRED: Recovery procedures
+    }
+}
+
+RELEASE_CHECKLIST {
+    VERIFICATION [
+        1. All helpers implemented
+        2. Tests passing
+        3. Basic docs complete
+        4. Security validated
+        5. Example code working
+    ]
+
+    PACKAGING [
+        1. Version tagged
+        2. Dependencies locked
+        3. README updated
+        4. Changelog entry
+    ]
+}
+
+DEFERRED_REQUIREMENTS {
+    LOCATION: COMPLIANCE.md
+    NOTE: "Infrastructure and advanced features for post-release"
+    
+    DEFERRED_FEATURES [
+        - Performance monitoring
+        - Extended documentation
+        - Container support
+        - CI/CD pipeline
+        - OWASP compliance
+        - Accessibility features
+        - Load testing
+    ]
+}
