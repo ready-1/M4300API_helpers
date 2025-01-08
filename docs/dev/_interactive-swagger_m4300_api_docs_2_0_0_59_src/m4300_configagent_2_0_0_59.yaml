@@ -1,0 +1,5545 @@
+openapi: 3.0.0
+info:
+  version: "2.0.0.59"
+  title: "M4300 REST API"
+  description: "M4300 REST API with ConfigAgent Documentation."
+  # contact:
+  #   name: "NETGEAR API Support"
+  #   email: proavdesign@netgear.com
+  # termsOfService: https://www.netgear.com/about/terms-and-conditions/
+
+servers:
+  - url: 'https://127.0.0.1:8443/api/v1'
+
+
+security:
+  - bearerAuth: []
+
+paths:
+  /login:
+    post:
+      security: []
+      tags:
+        - Authentication
+      description: Logging into device
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                login:
+                  $ref: '#/components/schemas/login_request'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+                schema:
+                  type: object
+                  properties:
+                    resp:
+                      $ref: '#/components/schemas/general_responses_code'
+                    login:
+                      $ref: '#/components/schemas/login_token'
+
+  /logout:
+    post:
+      tags:
+        - Authentication
+      description: Logging into device
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+                schema:
+                  type: object
+                  properties:
+                    resp:
+                      $ref: '#/components/schemas/general_responses_code'
+
+
+
+  /device_info:
+    get:
+      tags:
+        - Device Settings
+      description: Get the device information
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+                  device_info:
+                    $ref: '#/components/schemas/device_info'
+          
+  /device_name:
+    get:
+      tags:
+        - Device Settings
+      description: Get the device name
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+                  deviceName:
+                    $ref: '#/components/schemas/device_name'
+    post:
+      tags:
+        - Device Settings
+      description: Set the device name
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                deviceName:
+                  $ref: '#/components/schemas/device_name'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+                schema:
+                  type: object
+                  properties:
+                    resp:
+                      $ref: '#/components/schemas/general_responses_code'
+
+  /device_reboot:
+    post:
+      tags:
+        - Device Settings
+      description: Reboot switch
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                deviceReboot:
+                  $ref: '#/components/schemas/device_reboot'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+                schema:
+                  type: object
+                  properties:
+                    resp:
+                      $ref: '#/components/schemas/general_responses_code'
+
+  /bonjour:
+    get:
+      tags:
+        - Device Settings
+      description: Get the device bonjour status
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  bonjour:
+                    $ref: '#/components/schemas/bonjour'
+    post:
+      tags:
+        - Device Settings
+      description: Set the device bonjour status
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                bonjour:
+                  $ref: '#/components/schemas/bonjour'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+
+  /lldp_remote_devices:
+    get:
+      tags:
+        - Device Settings
+      description: Get remote device lldp information
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  lldp_remote_devices:
+                    $ref: '#/components/schemas/lldp_remote_devices'
+
+  /dual_image_status:
+    get:
+      tags:
+        - Device Settings
+      description: Get the device flash image status
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+                  dualImageStatus:
+                    $ref: '#/components/schemas/dual_image_status'
+
+  /active_image:
+    get:
+      tags:
+        - Device Settings
+      description: Get device activate flash image
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+                  active_image:
+                    $ref: '#/components/schemas/active_image_get'
+    post:
+      tags:
+        - Device Settings
+      description: Set device active flash image
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                active_image:
+                  $ref: '#/components/schemas/active_image_post'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+
+  /config_copy:
+    post:
+      tags:
+        - Device Settings
+      description: Copy configuration within switch
+      parameters:
+        - name: directive
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - rtos
+              - stob
+              - btos
+              - rtof
+            description: >
+              Copy directive options:
+                * `rtos` = from "running-config" to "startup-config"
+                * `stob` = from "running-config" to "startup-config"
+                * `btos` = from "backup-config" to "startup-config"
+                * `rtof` = from "running-config" to "factory-default"
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+
+  /config_file_compare:
+    get:
+      tags:
+        - Device Settings
+      description: Get configuration comparison
+      parameters:
+        - name: directive
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - rtos
+              - stob
+            description: >
+              Indicates a comparison:
+                * `rtos` = "running-config" and "startup-config"
+                * `stob` = "running-config" and "startup-config"
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+                  config_file_compare:
+                    $ref: '#/components/schemas/config_file_compare'
+
+  /system_config:
+    get:
+      tags:
+        - Device Settings
+      description: Get device console and telnet settings
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+                  system_config:
+                    $ref: '#/components/schemas/system_config_get'
+    post:
+      tags:
+        - Device Settings
+      description: Set device console and telnet settings
+      parameters:
+        - name: access_line
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - console
+              - telnet
+              - ssh
+            description: System access type setting
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                system_config:
+                  $ref: '#/components/schemas/system_config_post'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+
+  /system_rfc1213:
+    get:
+      tags:
+        - Device Settings
+      description: Get device name, description, location and contact
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+                  system_rfc1213:
+                    $ref: '#/components/schemas/system_rfc1213_get'
+    post:
+      tags:
+        - Device Settings
+      description: Set device name, location and contact
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                system_rfc1213:
+                  $ref: '#/components/schemas/system_rfc1213_post'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+
+
+
+  /swcfg_vlan:
+    get:
+      tags:
+        - Virtual Local Area Networks
+      description: Get VLAN configuration settings
+      parameters:
+        - name: vlanid
+          in: query
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 4093
+          description: VLAN ID
+          example: 1
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+                  switchConfigVlan:
+                    $ref: '#/components/schemas/swcfg_vlan'
+    post:
+      tags:
+        - Virtual Local Area Networks
+      description: Set VLAN configuration
+      parameters:
+        - name: vlanid
+          in: query
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 4093
+          description: VLAN ID
+          example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                switchConfigVlan:
+                  $ref: '#/components/schemas/swcfg_vlan'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+    delete:
+      tags:
+        - Virtual Local Area Networks
+      description: Delete VLAN configuration
+      parameters:
+        - name: vlanid
+          in: query
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 4093
+          description: VLAN ID
+          example: 1
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+
+  /swcfg_vlan_membership:
+    get:
+      tags:
+        - Virtual Local Area Networks
+      description: Get VLAN port membership list
+      parameters:
+        - name: vlanid
+          in: query
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 4093
+          description: VLAN ID
+          example: 1
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+                  vlanMembership:
+                    $ref: '#/components/schemas/swcfg_vlan_membership'
+    post:
+      tags:
+        - Virtual Local Area Networks
+      description: Set list of VLAN port membership
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                vlanMembership:
+                  $ref: '#/components/schemas/swcfg_vlan_membership'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+
+  /dot1q_sw_port_config:
+    get:
+      tags:
+        - Virtual Local Area Networks
+      description: Get VLAN switchport interface configuration
+      parameters:
+        - name: interface
+          in: query
+          required: true
+          schema:
+            type: integer
+          description: Port Interface ID
+          example: 1
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+                  dot1q_sw_port_config:
+                    $ref: '#/components/schemas/dot1q_sw_port_config_get'
+    post:
+      tags:
+        - Virtual Local Area Networks
+      description: Set VLAN switchport interface configuration
+      parameters:
+        - name: interface
+          in: query
+          required: true
+          schema:
+            type: integer
+          description: Port Interface ID
+          example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                dot1q_sw_port_config:
+                  $ref: '#/components/schemas/dot1q_sw_port_config_post'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+
+
+
+
+
+
+  /vlan_ip:
+    get:
+      tags:
+        - Virtual Local Area Networks
+      description: Get VLAN IP configuration
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+                  vlan_ip:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/vlan_ip'
+    post:
+      tags:
+        - Virtual Local Area Networks
+      description: Set VLAN IP configuration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                vlan_ip:
+                  $ref: '#/components/schemas/vlan_ip'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+                schema:
+                  type: object
+                  properties:
+                    resp:
+                      $ref: '#/components/schemas/general_responses_code'
+
+  /swcfg_port:
+    get:
+      tags:
+        - Port Information and Settings
+      description: Get port configuration
+      parameters:
+        - name: portid
+          in: query
+          required: true
+          schema:
+            type: integer
+          description: 'Port ID Number'
+          example: 1
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  switchPortConfig:
+                    $ref: '#/components/schemas/swcfg_port'
+    post:
+      tags:
+        - Port Information and Settings
+      description: Set port configuration
+      parameters:
+        - name: portid
+          in: query
+          required: true
+          schema:
+            type: integer
+          description: 'Port ID Number'
+          example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                switchPortConfig:
+                  $ref: '#/components/schemas/swcfg_port'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+
+  /sw_portstats:
+    get:
+      tags:
+        - Port Information and Settings
+      description: Get port statistics
+      parameters:
+        - name: portid
+          in: query
+          required: true
+          schema:
+            oneOf:
+              - type: integer
+              - type: string
+          description: Port ID Number by `<port#>` or `ALL`
+          example: ALL
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+                  switchStatsPort:
+                    $ref: '#/components/schemas/sw_portstats'
+
+  /device_reset_counters:
+    post:
+      tags:
+        - Port Information and Settings
+      description: Reset interface coutnters of device
+      parameters:
+        - name: portid
+          in: query
+          required: true
+          schema:
+            oneOf:
+              - type: integer
+              - type: string
+          description: Port ID Number by `<port#>` or `ALL`
+          example: ALL
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+
+  /fdb_stats:
+    get:
+      tags:
+        - Port Information and Settings
+      description: Get forwarding database (fdb) statistics
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+                  fdb_stats:
+                    $ref: '#/components/schemas/fdb_stats_get'
+    post:
+      tags:
+        - Port Information and Settings
+      description: Reset forwarding database (fdb) table entries
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                fdb_stats:
+                  $ref: '#/components/schemas/fdb_stats_post'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+
+  /fdbs:
+    get:
+      tags:
+        - Port Information and Settings
+      description: Get forwarding database (fdb) information
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+                  fdb_stats:
+                    $ref: '#/components/schemas/fdbs'
+    delete:
+      tags:
+        - Port Information and Settings
+      description: Delete forwarding database (fdb) MAC address entry
+      parameters:
+        - name: mac
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Delete all learned MAC entries in the forwarding database
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+                schema:
+                  type: object
+                  properties:
+                    resp:
+                      $ref: '#/components/schemas/general_responses_code'
+
+  /ptpv2_global:
+    get:
+      tags:
+        - Port Information and Settings
+      description: Get switch's PTPv2 status configuration
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+                  ptpv2_global:
+                    $ref: '#/components/schemas/ptpv2_global'
+    post:
+      tags:
+        - Port Information and Settings
+      description: Set switch's PTPv2 status configuration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ptpv2_global:
+                  $ref: '#/components/schemas/ptpv2_global'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+
+  /ptpv2:
+    get:
+      tags:
+        - Port Information and Settings
+      description: Get switch's PTPv2 status configuration
+      parameters:
+        - name: portid
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Port interface ID number by `<port#>` or `All`
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+                  ptpv2:
+                    $ref: '#/components/schemas/ptpv2_get'
+    post:
+      tags:
+        - Port Information and Settings
+      description: Set switch's PTPv2 status configuration
+      parameters:
+        - name: portid
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Port interface ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ptpv2:
+                  $ref: '#/components/schemas/ptpv2_post'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+
+  /fiber_optics:
+    get:
+      tags:
+        - Port Information and Settings
+      description: Get bridge base configuration
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+                  fiber_optics:
+                      $ref: '#/components/schemas/fiber_optics'
+
+  /dot1d_base_config:
+    get:
+      tags:
+        - Port Information and Settings
+      description: Get Bridge Base Configuration
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+                  dot1d_base_config:
+                      $ref: '#/components/schemas/dot1d_base_config'
+  /dot1d_tp_config:
+    get:
+      tags:
+        - Port Information and Settings
+      description: Get bridge timeout period for aging out dynamically learned forwarding information
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+                  dot1d_tp_config:
+                    $ref: '#/components/schemas/dot1d_tp_config_get'
+    post:
+      tags:
+        - Port Information and Settings
+      description: Set bridge timeout period for aging out dynamically learned forwarding information
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                dot1d_tp_config:
+                  $ref: '#/components/schemas/dot1d_tp_config_post'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+
+  /dot1d_tp_port_entries:
+    get:
+      tags:
+        - Port Information and Settings
+      description: Get bridge timeout period port entries
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+                  dot1d_tp_port_entries:
+                    $ref: '#/components/schemas/dot1d_tp_port_entries'
+
+
+
+  /swcfg_poe:
+    get:
+      tags:
+        - Power over Ethernet Information and Settings
+      description: Get port PoE configuration
+      parameters:
+        - name: portid
+          in: query
+          required: true
+          schema:
+            oneOf:
+              - type: integer
+              - type: string
+          description: Port ID Number by `<port#>` or `ALL`
+          example: ALL
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+                  poePortConfig:
+                    $ref: '#/components/schemas/swcfg_poe'
+    post:
+      tags:
+        - Power over Ethernet Information and Settings
+      description: Set port PoE configuration
+      parameters:
+        - name: portid
+          in: query
+          required: true
+          schema:
+            type: integer
+          description: Port ID Number by `<port#>` or `ALL`
+          example: ALL
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                poePortConfig:
+                  $ref: '#/components/schemas/swcfg_poe'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+                schema:
+                  type: object
+                  properties:
+                    resp:
+                      $ref: '#/components/schemas/general_responses_code'
+
+  /poe_config:
+    get:
+      tags:
+        - Power over Ethernet Information and Settings
+      description: Get switch PoE settings
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+                  poe_config:
+                    $ref: '#/components/schemas/poe_config_get'
+    post:
+      tags:
+        - Power over Ethernet Information and Settings
+      description: Set switch PoE settings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                poe_config:
+                  $ref: '#/components/schemas/poe_config_post'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+
+
+
+  /sw_lag_cfg:
+    get:
+      tags:
+        - Link Aggregration Group Settings
+      description: Get Link Aggregration Group settings
+      parameters:
+        - name: lag_group
+          in: query
+          required: true
+          schema:
+            oneOf:
+              - type: integer
+              - type: string
+          description: LAG Group ID# or `ALL`
+          example: 1
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+                  switchConfigLagGroup:
+                    $ref: '#/components/schemas/sw_lag_cfg'
+    post:
+      tags:
+        - Link Aggregration Group Settings
+      description: Set Link Aggregration Group settings
+      parameters:
+        - name: lag_group
+          in: query
+          required: true
+          schema:
+            type: integer
+          description: LAG Group ID
+          example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                switchConfigLagGroup:
+                  $ref: '#/components/schemas/sw_lag_cfg'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+
+
+
+  /costrust:
+    get:
+      tags:
+        - Quality of Service
+      description: Get Class of Service (CoS) trust settings
+      parameters:
+        - name: interface
+          in: query
+          required: true
+          schema:
+            oneOf:
+              - type: integer
+              - type: string
+          description: Port interface ID Number by `<port#>`, `ALL`, or `Global`
+          example: ALL
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+                  costrust:
+                    $ref: '#/components/schemas/costrust'
+    post:
+      tags:
+        - Quality of Service
+      description: Set Class of Service (CoS) trust settings
+      parameters:
+        - name: interface
+          in: query
+          required: true
+          schema:
+            type: integer
+            oneOf:
+              - type: integer
+              - type: string
+          description: Port interface ID Number by `<port#>`, `ALL`, or `Global`
+          example: ALL
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                costrust:
+                  $ref: '#/components/schemas/costrust'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+
+  /dot1p_queue_map:
+    get:
+      tags:
+        - Quality of Service
+      description: Get Class of Service (CoS) 802.1p queue mapping
+      parameters:
+        - name: interface
+          in: query
+          required: true
+          schema:
+            oneOf:
+              - type: integer
+              - type: string
+          description: Port interface ID Number by `<port#>`, `ALL`, or `Global`
+          example: ALL
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+                  dot1p_queue_map:
+                    $ref: '#/components/schemas/dot1p_queue_map'
+    post:
+      tags:
+        - Quality of Service
+      description: Set Class of Service (CoS) 802.1p queue mapping
+      parameters:
+        - name: interface
+          in: query
+          required: true
+          schema:
+            oneOf:
+              - type: integer
+              - type: string
+          description: Port interface ID Number by `<port#>` or `Global`
+          example: ALL
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                dot1p_queue_map:
+                  $ref: '#/components/schemas/dot1p_queue_map'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+
+  /ipdscp_queue_map:
+    get:
+      tags:
+        - Quality of Service
+      description: Get mapping from the Differentiated Services Code Point (DSCP) to the outgoing traffic forwarding queue
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+                  ipdscp_queue_map:
+                    $ref: '#/components/schemas/ipdscp_queue_map_get'
+    post:
+      tags:
+        - Quality of Service
+      description: Set mapping from the Differentiated Services Code Point (DSCP) to the outgoing traffic forwarding queue
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ipdscp_queue_map:
+                  $ref: '#/components/schemas/ipdscp_queue_map_post'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+
+  /cos_queue_config:
+    get:
+      tags:
+        - Quality of Service
+      description: Get Class of Service (CoS) queue configuration
+      parameters:
+        - name: interface
+          in: query
+          required: true
+          schema:
+            type: integer
+          description: Port interface ID by `<port#>`, `Global`, or `ALL`
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+                  cos_queue_config:
+                    $ref: '#/components/schemas/cos_queue_config'
+    post:
+      tags:
+        - Quality of Service
+      description: Set Class of Service (CoS) queue configuration
+      parameters:
+        - name: interface
+          in: query
+          required: true
+          schema:
+            type: integer
+          description: Port interface ID  by `<port#>` or `Global`
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                cos_queue_config:
+                  $ref: '#/components/schemas/cos_queue_config'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+
+
+
+  /snooping_vlan:
+    get:
+      tags:
+        - Multicast
+      description: Get Snooping VLAN Configuration
+      parameters:
+        - name: family
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - mdl
+              - igmp
+          description: Snooping family
+          example: igmp
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+                  snooping_vlans:
+                    $ref: '#/components/schemas/snooping_vlan'
+
+  /snooping_config:
+    get:
+      tags:
+        - Multicast
+      description: Get Snooping Configuration
+      parameters:
+        - name: family
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - mdl
+              - igmp
+          description: Snooping family
+          example: igmp
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+                  snooping_config:
+                    $ref: '#/components/schemas/snooping_config_get'
+    post:
+      tags:
+        - Multicast
+      description: Set Snooping Configuration
+      parameters:
+        - name: family
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - mdl
+              - igmp
+          description: Snooping family
+          example: igmp
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                snooping_config:
+                  $ref: '#/components/schemas/snooping_config_post'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+
+  /snooping_interfaces:
+    get:
+      tags:
+        - Multicast
+      description: Get Snooping Interface Configuration
+      parameters:
+        - name: family
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - mdl
+              - igmp
+          description: Snooping family
+          example: igmp
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+                  snooping_interfaces:
+                    $ref: '#/components/schemas/snooping_interfaces_get'
+    post:
+      tags:
+        - Multicast
+      description: Set Snooping Interface Configuration
+      parameters:
+        - name: interface
+          in: query
+          required: true
+          schema:
+            type: integer
+          description: Port interface ID
+          example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                snooping_interfaces:
+                  $ref: '#/components/schemas/snooping_interfaces_post'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+
+  /snooping_queriers:
+    get:
+      tags:
+        - Multicast
+      description: Get Snooping Querier Configuration
+      parameters:
+        - name: family
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - mdl
+              - igmp
+          description: Snooping family
+          example: igmp
+        - name: vlanid
+          in: query
+          required: true
+          schema:
+            type: integer
+          description: VLAN ID
+          example: 1
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+                  snooping_queriers:
+                    $ref: '#/components/schemas/snooping_queriers_get'
+    post:
+      tags:
+        - Multicast
+      description: Set Snooping Querier Configuration
+      parameters:
+        - name: family
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - mdl
+              - igmp
+          description: Snooping family
+          example: igmp
+        - name: vlanid
+          in: query
+          required: true
+          schema:
+            type: integer
+          description: VLAN ID
+          example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                snooping_queriers:
+                  $ref: '#/components/schemas/snooping_queriers_post'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+
+
+
+
+  /ip_route_table:
+    get:
+      tags:
+        - Routing Settings
+      description: Get IP Routing Table
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+                  ip_route_table:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ip_route_table'
+
+  /host_table:
+    get:
+      tags:
+        - Routing Settings
+      description: Get Switch's Host Table
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+                  hostTable:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/host_table'
+
+
+
+  /stp:
+    get:
+      tags:
+        - Spanning Tree Protocol
+      description: Get STP information
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+                  spanningTree:
+                      $ref: '#/components/schemas/stp'
+    post:
+      tags:
+        - Spanning Tree Protocol
+      description: Set STP information
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                spanningTree:
+                    $ref: '#/components/schemas/stp'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+  /dot1d_stp_entries:
+    get:
+      tags:
+        - Spanning Tree Protocol
+      description: Get Spanning Tree Protocol (STP) entries
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+                  dot1d_stp_entries:
+                      $ref: '#/components/schemas/dot1d_stp_entries'
+  /dot1d_stp_config:
+    get:
+      tags:
+        - Spanning Tree Protocol
+      description: Get Spanning Tree Protocol (STP) configuration
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+                  dot1d_stp_config:
+                      $ref: '#/components/schemas/dot1d_stp_config'
+  /dot1s_interfaces:
+    get:
+      tags:
+        - Spanning Tree Protocol
+      description: Get Multiple Spanning Tree Protocol (MSTP) interface configuration
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+                  dot1s_interfaces:
+                      $ref: '#/components/schemas/dot1s_interfaces_get'
+    post:
+      tags:
+        - Spanning Tree Protocol
+      description: Set Multiple Spanning Tree Protocol (MSTP) interface configuration
+      parameters:
+        - name: interface
+          in: query
+          required: true
+          schema:
+            type: integer
+          description: Port Interface Number
+          example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                dot1s_interfaces:
+                  $ref: '#/components/schemas/dot1s_interfaces_post'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+
+
+  /msti:
+    get:
+      tags:
+        - Spanning Tree Protocol
+      description: Get Multiple Spanning Tree (MST) ID
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+                  dot1s_msti_entries:
+                      $ref: '#/components/schemas/msti_get'
+    post:
+      tags:
+        - Spanning Tree Protocol
+      description: Set Multiple Spanning Tree (MST) ID
+      parameters:
+        - name: mstid
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: Multiple Spanning Tree (MST) ID
+          example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                dot1s_msti_entries:
+                    $ref: '#/components/schemas/msti_post'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+    delete:
+      tags:
+        - Spanning Tree Protocol
+      description: Delete MST ID
+      parameters:
+        - name: mstid
+          in: query
+          required: true
+          schema:
+            type: integer
+          description: MST ID
+          example: 1
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+
+
+
+  /device_log_reader:
+    get:
+      tags:
+        - Logging
+      description: Get device log reader
+      parameters:
+        - name: num_logs
+          in: query
+          required: true
+          schema:
+            type: integer
+          description: Number of logs pulled
+          example: 2
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+                  logReader:
+                      $ref: '#/components/schemas/device_log_reader'
+
+
+
+  /ping_test_start:
+    post:
+      tags:
+        - Diagnostics
+      description: Ping test
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                pingTest:
+                  $ref: '#/components/schemas/ping_test_start'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+
+  /ping_test_status:
+    get:
+      tags:
+        - Diagnostics
+      description: Get ping test status
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+                  pingTestStatus:
+                      $ref: '#/components/schemas/ping_test_status'
+
+  /traceroute_start:
+    post:
+      tags:
+        - Diagnostics
+      description: Traceroute start and stop
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tracerouteStart:
+                  $ref: '#/components/schemas/traceroute_start'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+
+  /traceroute_status:
+    get:
+      tags:
+        - Diagnostics
+      description: Traceroute results
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+                  tracerouteInfo:
+                    $ref: '#/components/schemas/traceroute_status'
+
+  /sw_portmirroring:
+    get:
+      tags:
+        - Diagnostics
+      description: Get Port Mirroring Configuration
+      parameters:
+        - name: sessionNum
+          in: query
+          required: true
+          schema:
+            type: integer
+          description: Port mirroring session number
+          example: 1
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+                  switchRstpPortConfig:
+                      $ref: '#/components/schemas/sw_portmirroring'
+    post:
+      tags:
+        - Diagnostics
+      description: Set Port Mirroring Configuration
+      parameters:
+        - name: sessionNum
+          in: query
+          required: true
+          schema:
+            type: integer
+          description: Port mirroring session number
+          example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                switchRstpPortConfig:
+                  $ref: '#/components/schemas/sw_portmirroring'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+    delete:
+      tags:
+        - Diagnostics
+      description: Delete Port Mirroring Configuration Session
+      parameters:
+        - name: sessionNum
+          in: query
+          required: true
+          schema:
+            type: integer
+          description: Port mirring session number
+          example: 1
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+
+  /device_cable_test:
+    get:
+      tags:
+        - Diagnostics
+      description: Get device cable test results
+      parameters:
+        - name: portid
+          in: query
+          required: true
+          schema:
+            type: integer
+          description: Port ID
+          example: 1
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  resp:
+                    $ref: '#/components/schemas/general_responses_code'
+                  cableTestStatus:
+                      $ref: '#/components/schemas/device_cable_test'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+components:
+    securitySchemes:
+      bearerAuth:
+        type: http
+        scheme: bearer
+
+
+    schemas:
+      login_request:
+        type: object
+        properties:
+          username:
+            type: string
+            description: Admin username
+            example: admin
+          password:
+            type: string
+            format: password
+            description: Admin user's password
+            example: Password1!
+        required:
+          - username
+          - password
+
+      login_token:
+        type: object
+        properties:
+          token:
+            type: string
+            description: Auth token string used to for subsequent requests at `Authorization` header.
+          expires:
+            type: integer
+            description: Duration for token to expire in seconds
+
+
+
+      device_info:
+        type: object
+        properties:
+          name:
+            type: string
+            description: Switch display name
+          serialNumber:
+            type: string
+            description: Switch Serial Number
+          macAddr:
+            type: string
+            description: Switch MAC Address
+          model:
+            type: string
+            description: Switch Model Number
+          lanIpAddress:
+            type: string
+            description: LAN IP Address
+          swVer:
+            type: string
+            description: Active firmware version
+          lastReboot:
+              type: string
+              description: Time of last reboot with time zone information
+          numOfPorts:
+            type: integer
+            description: Total number of switch ports available
+          numOfActivePorts:
+            type: integer
+            description: Total number of currently active switch ports
+          rstpState:
+            type: boolean
+            description: RSTP State
+          memoryUsed:
+            type: string
+            description: Amount of RAM used in KBs
+          memoryUsage:
+            type: string
+            description: '% of memory usage'
+          cpuUsage:
+            type: string
+            description: '% of CPU usage'
+          fanState:
+            type: string
+            description: Fan status
+          poeState:
+            type: boolean
+            description: PoE enabled status
+          upTime:
+            type: string
+            description: Up time of device
+          temperatureSensors:
+            type: array
+            items:
+              type: object
+              properties:
+                sensorNum:
+                  type: integer
+                  description: Temperature sensor SKU
+                sensorDesc:
+                  type: integer
+                  description: Description of the temperature sensor
+                sensorTemp:
+                  type: string
+                  description: Temperature sensor temperature in Celcius
+                sensorState:
+                  type: string
+                  enum:
+                    - 0
+                    - 1
+                    - 2
+                    - 3
+                    - 4
+                    - 5
+                    - 6
+                  description: >
+                    Temperature sensor state:
+                      * `0` = NONE
+                      * `1` = NORMAL
+                      * `2` = WARNING
+                      * `3` = CRITICAL
+                      * `4` = SHUTDOWN
+                      * `5` = NOT PRESENT
+                      * `6` = NOT OPERATIONAL
+          bootVersion:
+            type: string
+            description: Bootcode version of the Switch.
+          rxData:
+            type: integer
+            description: Total number of bytes received
+          txData:
+            type: integer
+            description: Total number of bytes transmitted
+          adminPoePower:
+            type: integer
+            description: Admin PoE power as selected from Web UI (unit is mW)
+        example:
+          name: ''
+          serialNumber: N1MN648000T
+          macAddr: 10:DA:43:D7:72:F9
+          model: GC110P
+          lanIpAddress: 10.120.166.73
+          swVer: 1.27.12.48
+          lastReboot: hu, 09 Mar 2017 06:08:21 (UTC+05:30 IST)
+          numOfPorts: 10
+          numOfActivePorts: 1
+          rstpState: false
+          memoryUsed: 153968 KB
+          memoryUsage: 64.45%
+          cpuUsage: 6.40%
+          fanState: active
+          poeState: true
+          upTime: 00 Days 03 Hrs 32 Mins 08 Secs
+          temperatureSensors:
+            sensorNum: 1
+            sensorDesc: MAC
+            sensorTemp: 68
+            sensorState: 1
+          bootVersion: 1.0.0.1
+          rxData: 1796615
+          txData: 3802563
+          adminPoePower: 120000
+
+      device_name:
+        type: object
+        properties:
+          name:
+            type: string
+            example: NGTR_SW
+          location:
+            type: string
+            example: TBD
+        required:
+          - name
+
+      device_reboot:
+        type: object
+        properties:
+          afterSecs:
+            type: integer
+            minimum: 0
+            maximum: 10
+            description: Delay reboot for t seconds
+            default: 2
+            example: 10
+        required:
+          - afterSecs
+
+      download:
+        type: object
+        properties:
+          protocol:
+            type: string
+            description: Protocol to by used for file transfer
+            enum:
+                - tftp
+                - http
+                - https
+          fwUrl:
+            type: string
+            description: tftp, http or https link to firmware image or configuration file to be upgrade.
+          fwDownloadTimeout:
+            type: integer
+            description: Firmware iamge download time-out value in seconds from http or https link.
+            default: 600
+          rebootNow:
+            type: boolean
+            description: >
+              Indicates when to reboot:
+                * `true` = immediate reboot
+                * `false` = reboot manually by admin
+            default: true
+          type:
+            type: string
+            enum:
+                - backup-config
+                - firmware
+            description: >
+              Type of file being downloaded to the switch:
+                * `backup-config` = Configuration file saved to the backup configuration settings
+                * `firmware` = Firmware image saved to the specified image number.
+          image:
+            type: integer
+            enum:
+                - 1
+                - 2
+            description: >
+              Specify image firmware will be downloaded:
+                * `1` = Image 1
+                * `2` = Image 2
+        required:
+          - protocol
+          - fwUrl
+          - fwDownloadTimeout
+          - rebootNow
+          - type
+          - image
+        example:
+          protocol: tftp
+          fwUrl: 'tftp://192.168.1.25/m4300v12.0.11.16.stk'
+          fwDownloadTimeout: 600
+          rebootNow: false
+          type: firmware
+          image: 1
+      download_status:
+        type: object
+        properties:
+          state:
+            type: integer
+            default: 0
+            enum:
+              - 0
+              - 1
+              - 2
+              - 3
+              - 4
+              - 5
+              - 6
+              - 7
+              - 8
+              - 9
+              - 10
+              - 11
+            description: >
+              Firmware update state:
+                * `0` = NONE
+                * `1` = IN_PROGRESS
+                * `2` = DOWNLOAD_START
+                * `3` = DOWNLOAD_TIMEOUT
+                * `4` = DOWNLOAD_FAILED
+                * `5` = DOWNLOAD_SUCCESS
+                * `6` = VALIDATION_UPGRADE_START
+                * `7` = VALIDATION_UPGRADE_FAILED
+                * `8` = VALIDATION_UPGRADE_SUCCESS
+                * `9` = OPEN_API_FAILED
+                * `10` = DEVICE_REBOOT_FAILED
+                * `11` = DEVICE_REBOOT_SUCCESS
+          message:
+            type: string
+            description: Firmware update status message
+            default: Download Status None
+            enum:
+              - Download Status None
+              - Download in Progress
+              - Download Started
+              - Download Timed-Out
+              - Download Failed
+              - Download Success
+              - Validation and Upgrade Started
+              - Validation and Upgrade Failed
+              - Validation and Upgrade Success
+              - OpEN API Failed
+              - Device Reboot or Reload Failed by Firmware Upgrade
+              - Device Rebooted or Reloaded by Firmware Upgrade
+          dwldProgress:
+            type: string
+            description: Firmware download progress in percent for HTTP or HTTPS
+
+      bonjour:
+        type: object
+        properties:
+          status:
+            type: string
+            description: Set the bonjour status
+            default: enabled
+            example: disabled
+        required:
+          - status
+
+      lldp_remote_devices:
+        type: object
+        properties:
+          id:
+            type: integer
+            description: LLDP ID Number
+          ifIndex:
+            type: integer
+            description: Internal interface number
+          remoteId:
+            type: integer
+            description: Identifier for device on remote system
+          chassisId:
+            type: string
+            description: Remote device hardware platform
+          chassisIdSubtype:
+            type: integer
+            enum:
+              - 1
+              - 2
+              - 3
+              - 4
+              - 5
+              - 6
+              - 7
+            description: >
+              Chassis ID field subtype:
+                * `1` = Chassis component
+                * `2` = Interface alias
+                * `3` = Port component
+                * `4` = MAC address
+                * `5` = Network address
+                * `6` = Interface name
+                * `7` = Local
+          remotePortId:
+            type: string
+            description: Device port that transmitted LLDP data
+          remotePortIdSubtype:
+            type: integer
+            enum:
+              - 1
+              - 2
+              - 3
+              - 4
+              - 5
+              - 6
+              - 7
+            description: >
+              Remote port field subtype:
+                * `1` = Chassis component
+                * `2` = Interface alias
+                * `3` = Port component
+                * `4` = MAC address
+                * `5` = Network address
+                * `6` = Interface name
+                * `7` = Local
+          remotePortDesc:
+            type: string
+            description: Remote system port description
+          remoteSysName:
+            type: string
+            description: Name assigned to the device in the remote system
+          remoteSysDesc:
+            type: string
+            description: Description assigned to the device in the remote system
+          sysCapabilitiesSupported:
+            type: string
+            description: List of primary functions supported by the remote system
+          sysCapabilitiesEnabled:
+            type: string
+            description: List of primary functions enabled on the remote system
+          mgmtAddresses:
+            type: array
+            items:
+              type: object
+              properties:
+                type:
+                  type: string
+                  description: List of types
+                  example: IPv4
+                address:
+                  type: string
+                  description: List of IP addresses
+          remoteTTL:
+            type: integer
+            description: Remote device Time To Live information offset
+        example:
+          id: 31
+          ifIndex: 31
+          remoteId: 5
+          chassisId: A0:40:A0:5B:41:AF
+          chassisIdSubtype: 4
+          remotePortId: A0:40:A0:5B:41:AF
+          remotePortIdSubtype: 3
+          remotePortDesc: lldp0
+          remoteSysName: BioTech-Wing
+          remoteSysDesc: 'Linux 3.14.77 #3 SMP PREEMPT Fri Jun 19 09:44:29 GMT 2020 armv7l'
+          sysCapabilitiesSupported: ["bridge, WLAN access point"]
+          sysCapabilitiesEnabled: ["bridge, WLAN access point"]
+          mgmtAddresses:
+            type: IPv4
+            address: 192.168.8.58
+          remoteTTL: 18
+
+
+
+      dual_image_status:
+        type: object
+        properties:
+          image1Label:
+            type: string
+            description: image1 label
+            default: image1
+          image1Descr:
+            type: string
+            description: image1 description
+          image1Version:
+            type: string
+            description: image1 version
+          image2Label:
+            type: string
+            description: image2 label
+            default: image2
+          image2Descr:
+            type: string
+            description: image2 description
+          image2Version:
+            type: string
+            description: image2 version
+          activatedImgLabel:
+            type: string
+            description: active image label
+        example:
+          image1Label: image1
+          image1Descr: ''
+          image1Version: 3.28.0.1
+          image2Label: image2
+          image2Descr: ''
+          image2Version: 3.30.11.1
+          activatedImgLabel: image2
+
+      active_image_get:
+        type: object
+        properties:
+          label:
+            type: string
+            description: Active image label
+            example: image1
+          imageDescr:
+            type: string
+            description: Active image description
+            example: Test Img
+
+      active_image_post:
+        type: object
+        properties:
+          label:
+            type: string
+            enum:
+              - image1
+              - image2
+            description: >
+              Set the activated image:
+                * `image1`
+                * `image2`
+            example: image1
+        required:
+          - label
+
+      config_file_compare:
+        type: object
+        properties:
+          diff:
+            type: array
+            items:
+              type: string
+              description: Diff of configurations compared
+              example: >
+                *** \/mnt\/fastpath\/startup - config\ tWed Aug 19 06: 01: 45 2020 ", "-- - \/mnt\/fastpath\/backup-config\tTue Aug 11 06:20:31 2020", "***************", "*** 2,10 ****", " !",
+                "!System Description\" GC752XP Insight Managed 52 - Port Gigabit Ethernet PoE + Smart Cloud Rackmount Switch with 2 SFP 1 G Fiber Ports & 2 SFP + 10 G
+                Fiber Ports(505 W), 20.28 .42 .2, B1 .0 .0 .4\ "", " !System Software Version \"20.28.42.2\"", "! q "
+
+      system_config_get:
+        type: object
+        properties:
+          sysAccessLine:
+            type: string
+            enum:
+              - console
+              - telnet
+              - ssh
+            description: System access type setting
+          sysLineTerminalLen:
+            type: integer
+            description: Terminal length of an access line.
+          sysSerialTimeOut:
+            type: integer
+            description: Serial timeout.
+          sysTelnetServerAdminMode:
+            type: string
+            enum:
+              - enabled
+              - disabled
+            description: Telnet server admin mode.
+      system_config_post:
+        type: object
+        properties:
+          sysLineTerminalDefaultLen:
+            type: integer
+            description: System access type setting
+          sysLineTerminalLen:
+            type: integer
+            description: Set terminal length of an access line to default.
+          sysSerialTimeOutDefault:
+            type: integer
+            description: Set serial timeout to default value.
+          sysSerialTimeOut:
+            type: integer
+            description: Serial timeout.
+          sysTelnetServerAdminMode:
+            type: string
+            enum:
+              - enabled
+              - disabled
+            description: Telnet server admin mode
+          sysTransferBytesCompleted:
+            type: integer
+            description: Bytes transferred for the file.
+        required:
+          - sysLineTerminalDefaultLen
+          - sysLineTerminalLen
+          - sysSerialTimeOutDefault
+          - sysSerialTimeOut
+          - sysTelnetServerAdminMode
+          - sysTransferBytesCompleted
+        example:
+          sysLineTerminalDefaultLen: 12
+          sysLineTerminalLen: 48
+          sysSerialTimeOutDefault: 0
+          sysSerialTimeOut: 120
+          sysTelnetServerAdminMode: enabled
+          sysTransferBytesCompleted: 1233
+
+      system_rfc1213_get:
+        type: object
+        properties:
+          sysDescr:
+            type: string
+            description: Description of the system
+          sysName:
+            type: string
+            description: Name of the system
+          sysLocation:
+            type: string
+            description: Physical location of the system
+          sysContact:
+            type: string
+            description: System administrator contact information
+        example:
+          sysDescr:  M4300-24X ProSAFE 20-port 10GBASE-T and 4-port 10G combo, 20.36.53.1, B1.0.0.15
+          sysName: M4324X
+          sysLocation: San Jose
+          sysContact: ""
+
+      system_rfc1213_post:
+        type: object
+        properties:
+          sysName:
+            type: string
+            maxLength: 255
+            description: Name of the system
+          sysLocation:
+            type: string
+            maxLength: 255
+            description: Location of the system
+          sysContact:
+            type: string
+            maxLength: 255
+            description: Contact of the system
+        required:
+          - sysName
+          - sysLocation
+          - sysContact
+        example:
+          sysName: M4324X
+          sysLocation: San Jose
+          sysContact: ""
+
+
+
+
+      swcfg_vlan:
+        type: object
+        properties:
+          vlanId:
+            type: integer
+            minimum: 1
+            maximum: 4096
+            description: VLAN ID
+          name:
+            type: string
+            description: VLAN Name
+          voiceVlanState:
+            type: boolean
+            description: Voice VLAN status
+            default: false
+          autoVoipState:
+            type: boolean
+            description: AutoVoIP
+            default: false
+          autoVideoState:
+            type: boolean
+            description: Auto Video
+            default: false
+          igmpConfig:
+            type: object
+            properties:
+              igmpState:
+                type: boolean
+                description: IGMP state for the VLAN
+        required:
+          - vlanId
+          - name
+          - igmpConfig
+            - igmpState
+        example:
+          vlanId: 1
+          name: Management VLAN
+          voiceVlanState: true
+          autoVoipState: false
+          autoVideoState: false
+          igmpConfig:
+             igmpState: false
+
+      swcfg_vlan_membership:
+        type: object
+        properties:
+          vlanid:
+            type: integer
+            minimum: 1
+            maximum: 4096
+            description: VLAN ID
+          portMembers:
+            type: array
+            items:
+              type: object
+            properties:
+              port:
+                type: integer
+                description: Physical ports belonging to the VLAN
+              tagged:
+                type: boolean
+                description: VLAN tagged membership
+          lagMembers:
+            type: array
+            items:
+              type: object
+            properties:
+              portid:
+                type: integer
+                description: LAG ports belonging to the VLAN
+              tagged:
+                type: boolean
+                description: VLAN tagged membership
+          trafficPrio:
+            type: integer
+            description: Traffic Priority of VLAN
+          trafficPrioPortMem:
+            type: array
+            items:
+              type: object
+              properties:
+                portid:
+                  type: integer
+                  description: Traffic priority and Port VLAN IDs (PVID) for these physical ports
+          trafficPrioLagMem:
+            type: array
+            items:
+              type: object
+              properties:
+                portid:
+                  type: integer
+                  description: Traffic priority and Port VLAN IDs (PVID) for these LAG ports.
+          pvidMembers:
+            type: array
+            items:
+              type: object
+              properties:
+                portid:
+                  type: integer
+                  minimum: 1
+                  maximum: 4093
+                  description: Port VLAN IDs (PVID) assignments for these port interfaces.
+        required:
+          - vlanid
+          - portMembers
+          - lagMembers
+          - trafficPrio
+          - trafficPrioPortMem
+          - trafficPrioLagMem
+        example:
+          vlanid: 2
+          portMembers:
+            - port: 1
+              tagged: false
+            - port: 2
+              tagged: false
+            - port: 3
+              tagged: false
+          lagMembers:
+            - port: 4
+              tagged: false
+            - port: 5
+              tagged: false
+            - port: 6
+              tagged: false
+          trafficPrio: 6
+          trafficPrioPortMem:
+            - port: 1
+            - port: 2
+            - port: 3
+          trafficPrioLagMem:
+            - port: 1
+            - port: 2
+            - port: 3
+          pvidMembers:
+            - port: 7
+            - port: 8
+            - port: 9
+
+      dot1q_sw_port_config_get:
+        type: object
+        properties:
+          interface:
+            type: string
+            description: Physical or logical interface in slot/port format
+          accessVlan:
+            type: integer
+            description: Access VLAN ID for the interface
+          allowedVlanList:
+            type: array
+            items:
+              type: string
+              description: For a given interface get VLAN membership for a range of VLANs
+          dynamicallyAddedVlanList:
+            type: string
+            description: Dynamically Added VLANs for the interface
+          forbiddenVlanList:
+            type: string
+            description: Forbidden VLANs for the interface
+          configMode:
+            type: string
+            enum:
+              - none
+              - general
+              - access
+              - trunk
+              - privateHost
+              - privatePromisc
+            description: Switchport Configuration Mode for the interface
+          nativeVlan:
+            type: integer
+            description: Native VLAN ID for the interface
+          taggedVlanList:
+            type: array
+            items:
+              type: string
+              description: Tagged VLANs for the interface
+          untaggedVlanList:
+            type: array
+            items:
+              type: string
+              description: Untagged VLANs for the interface
+        example:
+          interface: 1
+          accessVlan: 1
+          allowedVlanList:
+            - 1
+            - 2
+            - 5
+            - 6
+          dynamicallyAddedVlanList:  none
+          forbiddenVlanList: none
+          configMode: access
+          nativeVlan: 1
+          taggedVlanList:
+            - 201
+            - 202
+            - 203
+          untaggedVlanList:
+            - 1
+
+      dot1q_sw_port_config_post:
+        type: object
+        properties:
+          accessVlan:
+            type: integer
+            description: Set access VLAN ID for the interface
+          allowedVlanList:
+            type: array
+            items:
+              type: string
+            description: VLANs ID `#` or `all` VLANs allowed
+          configMode:
+            type: string
+            enum:
+              - none
+              - general
+              - access
+              - trunk
+              - privateHost
+              - privatePromisc
+            description: Switchport Configuration Mode for a port
+          nativeVlan:
+            type: string
+            description: Native VLAN ID for a port
+        required:
+          - accessVlan
+          - allowedVlanList
+          - configMode
+          - nativeVlan
+        example:
+          accessVlan: 1
+          allowedVlanList:
+            - all
+          configMode: access
+          nativeVlan: 1
+
+      voice_vlan_glb_cfg:
+        type: object
+        properties:
+          adminMode:
+            type: boolean
+            description: Global Voice VLAN feature setting
+            default: true
+            example: true
+        required:
+          - adminMode
+
+      voice_vlan_cfg:
+        type: object
+        properties:
+          mode:
+            type: integer
+            minimum: 0
+            maximum: 4
+            default: 0
+            enum:
+              - 0
+              - 1
+              - 2
+              - 3
+              - 4
+            description: >
+              Voice VLAN Config Mode:
+                * `0` = Voice VLAN config disable
+                * `1` = Voice VLAN config VLAN ID
+                * `2` = Voice VLAN config DOT1P
+                * `3` = Voice VLAN config none
+                * `4` = Voice VLAN config untagged
+            example: 1
+          value:
+            type: integer
+            minimum: 0
+            maximum: 7
+            default: 0
+            description: DOT1P Priority
+            example: 3
+        required:
+          - mode
+          - value
+
+      auto_voip_cfg_get:
+        type: object
+        properties:
+          vlanId:
+            type: integer
+            description: Auto VoIP VLAN ID
+          supportedChannels:
+            type: integer
+            default: 288
+            description: Count of max no of supported Voice channels
+          usedChannels:
+            type: integer
+            default: 0
+            description: No of voice channels used
+          protocolBased:
+            type: object
+            properties:
+              prioritizationType:
+                type: string
+                default: traffic-class
+                enum:
+                  - traffic-class
+                  - remark
+              classValue:
+                type: integer
+                default: 6
+                minimum: 0
+                maximum: 7
+                description: >
+                  Class value:
+                    * 6 max for traffic-class
+                    * 7 max for remark
+              mode:
+                type: boolean
+                default: false
+                description: Auto VoIP mode of the Protocol base config for the specified port number
+              status:
+                type: boolean
+                default: false
+                description: Operational Status of protocol based Auto VoIP for the specified port number
+          ouiBased:
+            type: object
+            properties:
+              priority:
+                type: integer
+                minimum: 0
+                maximum: 7
+                default: 5
+              mode:
+                type: boolean
+                default: false
+                description: Auto VoIP mode of the OUI base config for the specified port number
+              status:
+                type: boolean
+                default: false
+                description: Operational Status of OUI based Auto VoIP for the specified port number
+        example:
+          vlanId: 0
+          supportedChannels: 288
+          usedChannels: 0
+          protocolBased:
+            prioritizationType: traffic-class
+            classValue: 6
+            mode: false
+            status: false
+          ouiBased:
+            priority: 7
+            mode: false
+            status: false
+
+      auto_voip_cfg_post:
+        type: object
+        properties:
+          protocolBased:
+            type: object
+            properties:
+              prioritizationType:
+                type: string
+                default: traffic-class
+                enum:
+                  - traffic-class
+                  - remark
+              classValue:
+                type: integer
+                default: 6
+                minimum: 0
+                maximum: 7
+                description: >
+                  Class value:
+                    * 6 max for traffic-class
+                    * 7 max for remark
+              mode:
+                type: boolean
+                default: false
+                description: Auto VoIP mode of the Protocol base config for the specified port number
+            required:
+              - prioritizationType
+              - classValue
+              - mode
+          ouiBased:
+            type: object
+            properties:
+              vlanId:
+                type: integer
+                description: Auto VoIP VLAN ID
+              priority:
+                type: integer
+                minimum: 0
+                maximum: 7
+                default: 5
+              mode:
+                type: boolean
+                default: false
+                description: Auto VoIP mode of the OUI base config for the specified port number
+            required:
+              - vlanId
+              - priority
+              - mode
+        required:
+          - protocolBased
+          - ouiBased
+        example:
+          protocolBased:
+            prioritizationType: traffic-class
+            classValue: 6
+            mode: false
+          ouiBased:
+            vlanId: 2
+            priority: 7
+            mode: true
+
+      vlan_ip:
+        type: object
+        properties:
+          vlanId:
+            type: integer
+            description: VLAN ID
+          dhcpStatus:
+            type: boolean
+            description: Enable VLAN DHCP client
+          ipAddr:
+            type: string
+            description: VLAN IP address
+          ipMask:
+            type: string
+            description: VLAN subnet mask
+          ipMtu:
+            type: integer
+            description: VLAN Maximum Transmission Unit (MTU) size
+          vlanRouting:
+            type: boolean
+            description: Enable VLAN routing
+        example:
+          vlanId: 1
+          dhcpStatus: true
+          ipAddr: 10.40.7.100
+          ipMask: 255.255.252.0
+          ipMtu: 1500
+          vlanRouting: true
+
+      vlan_ip_configuration:
+        type: object
+        properties:
+          dhcpStatus:
+            type: boolean
+            description: VLAN DHCP Status
+          vlanId:
+            type: integer
+            description: VLAN ID
+          ipMtu:
+            type: integer
+            minimum: 68
+            maximum: 9198
+            default: 1500
+            description: Maximum size of IP packets sent on an interface
+        required:
+          - dhcpStatus
+          - vlanId
+          - ipMtu
+
+
+
+      swcfg_port:
+        type: object
+        properties:
+          ID:
+            type: integer
+            description: Port Number
+          description:
+            type: string
+            description: Port description label
+          portType:
+            type: integer
+            default: 1
+            enum:
+              - 0
+              - 1
+              - 2
+              - 3
+              - 4
+              - 5
+            description: >
+              Port configuration type:
+                * `0` = MODE_NONE
+                * `1` = MODE_GENERAL
+                * `2` = MODE_ACCESS
+                * `3` = MODE_TRUNK
+                * `4` = MODE_PRIVATE_HOST
+                * `5` = MODE_PRIVATE_PROMISC
+          adminMode:
+            type: boolean
+            default: true
+            description: Enable physical port interface
+          portSpeed:
+            type: integer
+            default: 0
+            enum:
+              - 0
+              - 1
+              - 2
+              - 3
+              - 4
+            description: >
+              Port link speed:
+                * `0` = auto
+                * `1` = SP10
+                * `2` = SP100
+                * `3` = SP1000
+                * `4` = SP10G
+          duplexMode:
+            type: integer
+            default: 2
+            enum:
+              - 2
+              - 1
+              - 0
+            description: >
+              Duplex Mode:
+                * `2` = auto
+                * `1` = full
+                * `0` = half
+          linkStatus:
+            type: integer
+            default: 1
+            enum:
+              - 0
+              - 1
+            description: >
+              Link up or down Status (read-only):
+                * `0` = Up
+                * `1` = Down
+          linkTrap:
+            type: boolean
+            default: true
+            description: Enable link trap
+          maxFrameSize:
+            type: integer
+            minimum: 1500
+            maximum: 9198
+            default: 1518
+            description: Max frame size
+          isPoE:
+            type: boolean
+            default: true
+            description: Port is PoE capable
+          txRate:
+            type: integer
+            minimum: 0
+            maximum: 100
+            default: 0
+            description: Traffic shaping rate for the interface as a percentage. 0% means traffic is Unlimited. 100% means traffic is Blocked/Limited.
+          rtlimitUcast:
+            type: object
+            description: Rate limit for unicast
+            properties:
+              status:
+                type: boolean
+                default: false
+                description: Rate limit for unicast enabled or disabled
+              threshold:
+                type: integer
+                default: 5
+                description: Rate limiting value for unicast as a percentage
+            required:
+              - status
+              - threshold
+          rtlimitMcast:
+            type: object
+            description: Rate limit for multicast
+            properties:
+              status:
+                type: boolean
+                default: false
+                description: Rate limit for multicast enabled or disabled
+              threshold:
+                type: integer
+                default: 5
+                description: Rate limiting value for multicast as a percentage
+            required:
+              - status
+              - threshold
+          rtlimitBcast:
+            type:  object
+            description: Rate limit for broadcast
+            properties:
+              status:
+                type: boolean
+                default: false
+                description: Rate limit for broadcast enabled or disabled
+              threshold:
+                type: integer
+                default: 5
+                description: Rate limiting value for broadcast as a percentage
+            required:
+              - status
+              - threshold
+          portVlanId:
+            type: integer
+            minimum: 1
+            maximum: 4096
+            default: 1
+            description: Port's VLAN ID
+          defVlanPrio:
+            type: integer
+            minimum: 0
+            maximum: 7
+            default: 0
+            description: Default VLAN priority
+          scheduleName:
+            type: string
+            description: Name of the schedule
+        required:
+          - ID
+          - description
+          - portType
+          - adminMode
+          - isPoE
+          - txRate
+          - rtlimitUcast
+          - rtlimitMcast
+          - rtlimitBcast
+          - portVlanId
+          - defVlanPrio
+        example:
+          ID: 0
+          description: ntgr_port_g15
+          portType: 1
+          adminMode: true
+          portSpeed: 0
+          duplexMode: 2
+          linkStatus: 0
+          linkTrap: true
+          maxFrameSize: 1518
+          isPoE: true
+          txRate: 0
+          rtlimitUcast:
+            status: true
+            threshold: 10
+          rtlimitMcast:
+            status: true
+            threshold: 10
+          rtlimitBcast:
+            status: true
+            threshold: 10
+          portVlanId: 1
+          defVlanPrio: 0
+          scheduleName: Schedule_1
+
+      sw_portstats:
+        type: object
+        properties:
+          portId:
+            type: integer
+            description: Port Number
+          switchName:
+            type: string
+            description: Name of Switch
+          myDesc:
+            type: string
+            description: Port description
+          adminMode:
+            type: boolean
+            description: Admin Mode of port
+          status:
+            type: integer
+            enum:
+              - 0
+              - 1
+            description: >
+              Link Status:
+                * `0` = LINK_UP
+                * `1` = LINK_DOWN
+          poeStatus:
+            type: integer
+            enum:
+              - -1
+              - 0
+              - 1
+              - 2
+              - 3
+              - 4
+              - 5
+              - 6
+              - 7
+            description: >
+              PoE Status:
+                * `-1` = STATUS_INVALID
+                * `0` = STATUS_DISABLED
+                * `1` = STATUS_SEARCHING
+                * `2` = STATUS_DELIVERING_POWER
+                * `3` = STATUS_TEST
+                * `4` = STATUS_FAULT
+                * `5` = STATUS_OTHER_FAULT
+                * `6` = STATUS_REQUESTING_POWER
+                * `7` = STATUS_OVERLOAD
+          mode:
+            type: integer
+            enum:
+              - 0
+              - 1
+              - 2
+              - 3
+              - 4
+              - 5
+            description: >
+              Port Mode:
+                * `0` = MODE_NONE
+                * `1` = MODE_GENERAL
+                * `2` = MODE_ACCESS
+                * `3` = MODE_TRUNK
+                * `4` = MODE_PRIVATE_HOST
+                * `5` = MODE_PRIVATE_PROMISC
+          vlans:
+            type: array
+            items:
+              type: integer
+              description: VLAN ID membership
+          trafficRx:
+            type: integer
+            description: Total number of bytes received
+          trafficTx:
+            type: integer
+            description: Total number of bytes transmitted
+          rxMbps:
+            type: string
+            description: Current receive bit rate in Mbps
+          txMbps:
+            type: string
+            description: Current transmit bit rate in Mbps
+          crcErrorsRx:
+            type: integer
+            description: Total numver of packets with CRC errors received
+          errorsRxTx:
+            type: integer
+            description: Number of error packets
+          dropsRxTx:
+            type: integer
+            description: Number of packets dropped
+          portMacAddress:
+            type: string
+            description:  Port MAC Address
+          speed:
+            type: integer
+            enum:
+              - 1
+              - 2
+              - 3
+              - 4
+              - 5
+              - 6
+              - 7
+              - 8
+              - 9
+              - 10
+              - 11
+              - 12
+              - 13
+              - 14
+              - 15
+              - 128
+              - 129
+              - 130
+            description: >
+              Interface Speed:
+                * `1` = SPEED_AUTO_NEG
+                * `2` = SPEED_HALF_100TX
+                * `3` = SPEED_FULL_100TX
+                * `4` = SPEED_HALF_10T
+                * `5` = SPEED_FULL_10T
+                * `6` = SPEED_FULL_100FX
+                * `7` = SPEED_FULL_1000SX
+                * `8` = SPEED_FULL_10GSX
+                * `9` = SPEED_FULL_20GSX
+                * `10` = SPEED_FULL_40GSX
+                * `11` = SPEED_FULL_25GSX
+                * `12` = SPEED_FULL_50GSX
+                * `13` = SPEED_FULL_100GSX
+                * `14` = SPEED_AAL5_155
+                * `15` = SPEED_FULL_5FX
+                * `128` = SPEED_FULL_2P5FX
+                * `129` = SPEED_LAG
+                * `130` = SPEED_UNKNOWN
+          duplex:
+            type: integer
+            enum:
+              - 0
+              - 1
+              - 65535
+            description: >
+              Interface Duplex mode:
+                * `0` = half
+                * `1` = full
+                * `65535` = auto
+          frameSize:
+            type: integer
+            description: Packets size measured in Maximum Transmission Units
+          flowControl:
+            type: boolean
+            description: Flow control enabled
+          lacpMode:
+            type: boolean
+            description: LACP enabled
+          mirrored:
+            type: boolean
+            description: Port mirror enabled
+          stpStatus:
+            type: boolean
+            description: STP admin mode enabled on the port
+          portState:
+            type: integer
+            enum:
+              - 1
+              - 2
+              - 3
+              - 4
+              - 5
+              - 6
+            description: >
+              STP port state:
+                * `1` = Discarding
+                * `2` = Learning
+                * `3` = Forwarding
+                * `4` = Disabled
+                * `5` = Manual forwarding
+                * `6` = Not participate
+          oprState:
+            type: integer
+            enum:
+              - 0
+              - 1
+              - 2
+            description: >
+              Port operational state:
+                * `0` = DIAG_PORT_DISABLE
+                * `1` = DIAG_PORT_ENABLE
+                * `2` DIAG_PORT_D_DISABLE
+          powerLimitClass:
+            type: integer
+            enum:
+              - 0
+              - 1
+              - 2
+              - 3
+              - 4
+              - 5
+            description: >
+              PoE port power class:
+                * `0` = INVALID
+                * `1` = CLASS0
+                * `2` = CLASS1
+                * `3` = CLASS2
+                * `4` = CLASS3
+                * `5` = CLASS4
+          neighborInfo:
+            type: object
+            description: Neighbor connected device Information
+            properties:
+              name:
+                type: string
+                description: Neighbor name
+              description:
+                type: string
+                description: Neighbor description
+              capabilities:
+                type: string
+                description: Neighbor capabilites
+              chassisId:
+                type: string
+                description: Neighbor chassis ID
+              chassisIdSubtype:
+                type: integer
+                enum:
+                  - 1
+                  - 2
+                  - 3
+                  - 4
+                  - 5
+                  - 6
+                  - 7
+                description: >
+                  Neighbor chassis subtype:
+                    * `1` = SUBTYPE_CHASSIS_COMP
+                    * `2` = SUBTYPE_INTF_ALIAS
+                    * `3` = SUBTYPE_PORT_COMP
+                    * `4` = SUBTYPE_MAC_ADDR
+                    * `5` = SUBTYPE_NET_ADDR
+                    * `6` = SUBTYPE_INTF_NAME
+                    * `7` = SUBTYPE_LOCAL
+              portId:
+                type: string
+                description: Neighbor port ID
+              portIdSubtype:
+                type: integer
+                enum:
+                  - 1
+                  - 2
+                  - 3
+                  - 4
+                  - 5
+                  - 6
+                  - 7
+                description: >
+                  Neighbor port subtype:
+                    * `1` = SUBTYPE_INTF_ALIAS
+                    * `2` = SUBTYPE_PORT_COMP
+                    * `3` = SUBTYPE_MAC_ADDR
+                    * `4` = SUBTYPE_NET_ADDR
+                    * `5` = SUBTYPE_INTF_NAME
+                    * `6` = SUBTYPE_AGENT_ID
+                    * `7` = SUBTYPE_LOCAL
+              portDescription:
+                type: string
+                description: Neighbor port description
+              mgmtIpAddress:
+                type: string
+                description: Neighbor management IP Address
+          portAuthState:
+            type: integer
+            enum:
+              - 1
+              - 2
+              - 3
+            description: >
+              Port authorization state:
+                * `1` = Authorised
+                * `2` = Unauthorised
+                * `3` = N/A
+        example:
+          portId: 47
+          switchName: S3300-52X-PoE+
+          myDesc: port_47
+          adminMode: true
+          status: 0
+          poeStatus: 1
+          mode: 1
+          vlans: [1, 2, 3]
+          trafficRx: 4404152
+          trafficTx: 12178123
+          rxMbps: 1.0
+          txMbps: 1.2
+          crcErrorsRx: 0
+          errorsRxTx: 0
+          dropsRxTx: 0
+          portMacAddress: '08:BD:43:6F:4A:86'
+          speed: 7
+          duplex: 65535
+          frameSize: 1500
+          flowControl: true
+          lacpMode: true
+          mirrored: false
+          stpStatus: false
+          portState: 5
+          oprState: 1
+          powerLimitClass: 0
+          neighborInfo:
+            name: BLR-N-DATA-1
+            description: M5300-52G3 ProSafe 48-port Gigabit L3 with 10 Gigabit Stacking, 10.0.0.53, B1.0.0.5
+            capabilities: bridge, router
+            chassisId: 'DC:EF:09:DE:A9:3D'
+            chassisIdSubtype: 4
+            portId: 2/0/27
+            portIdSubtype: 7
+            portDescription: 2/0/27
+            mgmtIpAddress: 169.254.100.100
+          portAuthState: 1
+
+      fdb_stats_get:
+        type: object
+        properties:
+          staticEntries:
+            type: integer
+            description: Count of the static entries in the FDB table.
+          dynamicEntries:
+            type: integer
+            description: Count of the dynamic entries in the FDB table.
+          maxTableEntries:
+            type: integer
+            description: Maximum number of entries FDB table can hold.
+          currentTableEntries:
+            type: integer
+            description: Current number of entries in the FDB table.
+          greatestTableEntries:
+            type: integer
+            description: Greatest number of entries the FDB table held.
+        example:
+          staticEntries: 2
+          dynamicEntries: 110
+          maxTableEntries: 16384
+          currentTableEntries: 112
+          greatestTableEntries: 133
+
+      fdb_stats_post:
+        type: object
+        properties:
+          greatestTableEntriesReset:
+            type: boolean
+            description: Reset the greatest number of entries in the forwarding database to zero.
+            example: true
+        required:
+          - greatestTableEntriesReset
+
+      fdbs:
+        type: array
+        items:
+          type: object
+          properties:
+            interface:
+              type: integer
+              description: Interface entry (slot/port)
+            vlanId:
+              type: integer
+              description: VLAN ID of the entry
+            mac:
+              type: string
+              description: MAC Address of the entry
+            entryType:
+              type: integer
+              enum:
+                - 0
+                - 1
+                - 2
+                - 3
+                - 4
+                - 5
+                - 6
+                - 7
+                - 8
+                - 9
+                - 10
+                - 11
+                - 12
+              description: >
+                Fdb entry type:
+                  * `0` = Static
+                  * `1` = Learned
+                  * `2` = Management
+                  * `3` = GMRP Learned
+                  * `4` = Self
+                  * `5` = Dot1x Static
+                  * `6` = Dot1ag Static
+                  * `7` = Routing Intf address
+                  * `8` = Address is learned, but not guaranteed to be in HW (relevant for SW learning)
+                  * `9` = FIP Snooping Learned
+                  * `10` = CP client MAC Address
+                  * `11` = ethcfm Static
+                  * `12` = Y.1731 Static
+        example:
+          - interface: 1
+            vlanId: 1
+            mac: 00:17:61:11:0D:4E
+            entryType: 1
+          - interface: 1
+            vlanId: 1
+            mac: 00:17:61:11:AF:E8
+            entryType: 1
+          - interface: 1
+            vlanId: 1
+            mac: 00:26:6C:1E:78:EB
+            entryType: 1
+
+      ptpv2_global:
+        type: object
+        properties:
+            adminMode:
+              type: string
+              description: Switch's PTPv2 service status
+              example: enabled
+        required:
+          - adminMode
+
+      ptpv2_get:
+        type: object
+        properties:
+            adminMode:
+              type: string
+              description: Port PTPv2 configuration status
+              example: enabled
+            operaMode:
+              type: string
+              description: Port PTPv2 operational status
+              example: enabled
+        required:
+          - adminMode
+          - operaMode
+
+      ptpv2_post:
+        type: object
+        properties:
+            adminMode:
+              type: string
+              description: Toggle port PTPv2
+              example: enabled
+        required:
+          - adminMode
+
+      fiber_optics:
+        type: object
+        properties:
+          port:
+            type: string
+            description: Port interface
+          temp:
+            type: string
+            description: Temperature of the module in celsius
+          voltage:
+            type: string
+            description: Voltage usage of the module
+          current:
+            type: string
+            description: Current usage of the module in milliamps
+          outputPower:
+            type: string
+            description: Power output of the module in decibel-milliwatts
+          inputPower:
+            type: string
+            description: Power input of the module in decibel-milliwatts
+          txFault:
+            type: string
+            description: Transmitter fault
+          los:
+            type: string
+            description: Loss of signal
+          faultStatus:
+            type: string
+            description: Fault status
+          vendorName:
+            type: string
+            description: Vender name of the module
+          linkLength_50_um:
+            type: string
+            description: Link length in meters
+          linkLength_62.5_um:
+            type: string
+            description: Link length in meters
+          linkLength:
+            type: string
+            description: Link length in meters
+          serialNumber:
+            type: string
+            description: Serial number of the module
+          partNumber:
+            type: string
+            description: Part number of the module
+          nominalBitRate:
+            type: string
+            description: Nominal bit rate in Mbps
+          rev:
+            type: string
+            description: Vendor revision
+          compliance:
+            type: string
+            description: Module compliance type
+          Supported:
+            type: string
+            description: Support status
+          possibleSpeedDetected:
+            type: string
+            description: Possible speed detected
+        example:
+          port: 1/0/1
+          temp: 1
+          voltage: 1
+          current: 1
+          outputPower: 1
+          inputPower: 1
+          txFault: 1
+          los: 1
+          faultStatus: No Fault
+          vendorName: NETGEAR
+          linkLength_50_um: 0
+          linkLength_62.5_um: 0
+          linkLength: 1M
+          serialNumber: M7A05393
+          partNumber: CABSFP10G1MNC
+          nominalBitRate: 10000
+          rev: C
+          compliance: DAC
+          Supported: Yes
+          possibleSpeedDetected: 10G
+
+      dot1d_base_config:
+        type: object
+        properties:
+          baseBridgeAddress:
+            type: string
+            description: Base bridge address
+            example: 8C:3B:AD:66:C6:98
+          baseNumPorts:
+            type: integer
+            description: Base number ports
+            example: 78
+          baseType:
+            type: integer
+            description: Base type
+            example: 2
+
+      dot1d_tp_config_get:
+        type: object
+        properties:
+          learnedEntryDiscards:
+            type: integer
+            description: Learned entry
+            example: 0
+          agingTime:
+            type: integer
+            default: 300
+            description: Aging time in seconds.
+            example: 300
+
+      dot1d_tp_config_post:
+        type: object
+        properties:
+          agingTime:
+            type: integer
+            default: 300
+            description: Aging time in seconds.
+            example: 300
+        required:
+          - agingTime
+
+      dot1d_tp_port_entries:
+        type: array
+        items:
+          type: object
+          properties:
+            port:
+              type: integer
+              description: Port Interface Number
+            maxInfo:
+              type: integer
+              description: Maximum size of the information field this port can receive or transmit.
+            inFrames:
+              type: integer
+              description: Number of frames received by this port from its segment.
+            outFrames:
+              type: integer
+              description: Number of frames transmitted by this port to its segment.
+            inDiscards:
+              type: integer
+              description: Count of valid frames received which were discarded by the forwarding process.
+        example:
+          - port: 1
+            maxInfo: 1518
+            inFrames: 2668593
+            outFrames: 2739683
+            inDiscards: 0
+          - port: 2
+            maxInfo: 1518
+            inFrames: 0
+            outFrames: 0
+            inDiscards: 0
+          - port: 3
+            maxInfo: 1518
+            inFrames: 56970
+            outFrames: 71314
+            inDiscards: 0
+
+
+
+      swcfg_poe:
+        type: object
+        properties:
+          portid:
+            type: integer
+            description: Port ID
+          enable:
+            type: boolean
+            description: Enable PoE power
+          powerLimitMode:
+            type: integer
+            enum:
+              - 0
+              - 1
+              - 2
+              - 3
+              - 4
+            description: >
+              Power limit mode:
+                * `0` = Invalid
+                * `1` = DOT3AF
+                * `2` = USER
+                * `3` = NONE
+                * `4` = COUNT
+          classification:
+            type: integer
+            enum:
+              - 0
+              - 1
+              - 2
+              - 3
+              - 4
+            description: >
+              PoE power classification:
+                * `0` = Invalid
+                * `1` = Class 0
+                * `2` = Class 1
+                * `3` = Class 2
+                * `4` = Class 3
+          currentPower:
+            type: integer
+            minimum: 0
+            maximum: 30000
+            description: Current power used in milliwatts
+          powerLimit:
+            type: integer
+            minimum: 0
+            maximum: 30000
+            description: Power limit in milliwatts
+          status:
+            type: integer
+            enum:
+              - -1
+              - 0
+              - 1
+              - 2
+              - 3
+              - 4
+              - 5
+              - 6
+              - 7
+            description: >
+              PoE status:
+                * `-1` = Invalid
+                * `0` = Disabled
+                * `1` = Searching
+                * `2` = Delivering Power
+                * `3` = Test
+                * `4` = Fault
+                * `5` = Other Fault
+                * `6` = Requesting Power
+                * `7` = Overload
+          reset:
+            type: boolean
+            description: PoE port power cycle
+        required:
+          - enable
+          - powerLimitMode
+          - classification
+          - powerLimit
+        example:
+          enable: true
+          powerLimitMode: 1
+          classification: 1
+          currentPower: 30000
+          powerLimit: 30000
+          status: 2
+          reset: false
+
+      poe_config_get:
+        type: object
+        properties:
+          firmwareVersion:
+            type: string
+            description: PoE Firmware Version
+          pseMainOperationStatus:
+            type: string
+            enum:
+              - ON
+              - OFF
+            description: Power Sourcing Equipment main operation status
+          totalPowerConsumedWatts:
+            type: string
+            description: Total power consumed in watts
+          powerManagmentMode:
+            type: string
+            enum:
+              - dynamic
+              - static
+            description: PoE power management mode
+          traps:
+            type: string
+            enum:
+              - enable
+              - disable
+          powerDetectionMode:
+            type: integer
+            description: >
+              PoE Detection Mode:
+               * `0` = Invalid
+               * `1` = Legacy
+               * `2` = 4pt 802.3af
+               * `3` = 4pt 802.3af and legacy
+               * `4` = 2pt 802.3af
+               * `5` = 2pt 802.3af and legacy
+               * `6` = None
+               * `7` = Count
+        example:
+          firmwareVersion: 11.6.10.6
+          pseMainOperationStatus: OFF
+          totalPowerConsumedWatts: 0.0
+          powerManagmentMode: Static
+          traps: enable
+          powerDetectionMode: 3
+
+      poe_config_post:
+        type: object
+        properties:
+          pseMainOperationStatus:
+            type: string
+            enum:
+              - enabled
+              - disabled
+            description: Main PoE Status
+          usageThreshold:
+            type: integer
+            minimum: 1
+            maximum: 99
+            default: 95
+            description: Limit PoE usage with a threshold in percentage
+          powerManagmentMode:
+            type: string
+            enum:
+              - dynamic
+              - static
+            description: PoE power management mode
+          powerDetectionMode:
+            type: integer
+            description: >
+              PoE Detection Mode:
+               * `0` = Invalid
+               * `1` = Legacy
+               * `2` = 4pt 802.3af
+               * `3` = 4pt 802.3af and legacy
+               * `4` = 2pt 802.3af
+               * `5` = 2pt 802.3af and legacy
+               * `6` = None
+               * `7` = Count
+          traps:
+            type: string
+            enum:
+              - enabled
+              - disabled
+        required:
+          - pseMainOperationStatus
+          - usageThreshold
+          - powerManagmentMode
+          - powerDetectionMode
+          - traps
+        example:
+          pseMainOperationStatus: enabled
+          usageThreshold: 95
+          powerManagmentMode: static
+          powerDetectionMode: 3
+          traps: enabled
+
+
+
+      sw_lag_cfg:
+        type: object
+        properties:
+          lag_group:
+            type: integer
+            minimum: 0
+            maximum: 128
+            description: >
+              LAG Group:
+                * `0` = Create a new LAG group
+                * Non-zero values will modify an existing LAB group.
+          name:
+            type: string
+            description: LAG description
+          groupId:
+            type: integer
+            description: LAG Group ID
+          adminMode:
+            type: boolean
+            description: LAG enabled state
+          type:
+            type: integer
+            enum:
+              - 0
+              - 1
+            description: >
+              LAG Type:
+                * `0` = Dynamic or Static LAG
+                * `1` = Static LAG
+          members:
+            type: array
+            items:
+              type: integer
+            description: LAG Port members
+        required:
+          - name
+          - groupId
+          - adminMode
+          - type
+          - members
+        example:
+          name: ch1
+          groupId: 1
+          adminMode: false
+          type: 0
+          members:
+            - 3
+            - 4
+
+
+
+      costrust:
+        type: object
+        properties:
+          mode:
+            type: string
+            enum:
+              - dot1p
+              - untrusted
+              - ip-dscp
+            description: >
+              Trust mode of COS - Global/ALL/Per Interface:
+                * dot1p
+                * untrusted
+                * ip-dscp
+            example: ip-dscp
+        required:
+          - mode
+
+      dot1p_queue_map:
+        type: array
+        items:
+          type: object
+          properties:
+            priority:
+              type: integer
+              minimum: 0
+              maximum: 7
+              description: Priority assigned to this class
+            queuemap:
+              type: integer
+              minimum: 0
+              maximum: 7
+              description: Assigned queue number
+        example:
+          - priority: 0
+            queuemap: 0
+          - priority: 1
+            queuemap: 1
+          - priority: 2
+            queuemap: 0
+          - priority: 3
+            queuemap: 1
+          - priority: 4
+            queuemap: 0
+          - priority: 5
+            queuemap: 2
+          - priority: 6
+            queuemap: 2
+          - priority: 7
+            queuemap: 3
+
+      ipdscp_queue_map_get:
+        type: array
+        items:
+          type: object
+          properties:
+            dscpid:
+              type: integer
+              minimum: 0
+              maximum: 63
+              description: Class identifier for this DSCP
+            dscpmap:
+              type: integer
+              minimum: 0
+              maximum: 7
+              description: Assigned queue number
+        example:
+          - dscpid: 0
+            dscpmap: 1
+          - dscpid: 1
+            dscpmap: 1
+          - dscpid: 2
+            dscpmap: 0
+          - dscpid: 3
+            dscpmap: 1
+          - dscpid: 4
+            dscpmap: 0
+          - dscpid: 5
+            dscpmap: 2
+          - dscpid: 6
+            dscpmap: 2
+          - dscpid: 7
+            dscpmap: 3
+          - dscpid: 8
+            dscpmap: 3
+          - dscpid: 9
+            dscpmap: 0
+          - dscpid: 10
+            dscpmap: 0
+          - dscpid: 11
+            dscpmap: 0
+          - dscpid: 12
+            dscpmap: 0
+          - dscpid: 13
+            dscpmap: 0
+          - dscpid: 14
+            dscpmap: 0
+          - dscpid: 15
+            dscpmap: 0
+          - dscpid: 16
+            dscpmap: 0
+          - dscpid: 17
+            dscpmap: 0
+          - dscpid: 18
+            dscpmap: 0
+          - dscpid: 19
+            dscpmap: 0
+          - dscpid: 20
+            dscpmap: 0
+          - dscpid: 21
+            dscpmap: 0
+          - dscpid: 22
+            dscpmap: 0
+          - dscpid: 23
+            dscpmap: 0
+          - dscpid: 24
+            dscpmap: 0
+          - dscpid: 25
+            dscpmap: 0
+          - dscpid: 26
+            dscpmap: 0
+          - dscpid: 27
+            dscpmap: 0
+          - dscpid: 28
+            dscpmap: 0
+          - dscpid: 29
+            dscpmap: 0
+          - dscpid: 30
+            dscpmap: 0
+          - dscpid: 31
+            dscpmap: 0
+          - dscpid: 32
+            dscpmap: 0
+          - dscpid: 33
+            dscpmap: 0
+          - dscpid: 34
+            dscpmap: 0
+          - dscpid: 35
+            dscpmap: 0
+          - dscpid: 36
+            dscpmap: 0
+          - dscpid: 37
+            dscpmap: 0
+          - dscpid: 38
+            dscpmap: 0
+          - dscpid: 39
+            dscpmap: 0
+          - dscpid: 40
+            dscpmap: 0
+          - dscpid: 41
+            dscpmap: 0
+          - dscpid: 42
+            dscpmap: 0
+          - dscpid: 43
+            dscpmap: 0
+          - dscpid: 44
+            dscpmap: 0
+          - dscpid: 45
+            dscpmap: 0
+          - dscpid: 46
+            dscpmap: 0
+          - dscpid: 47
+            dscpmap: 0
+          - dscpid: 48
+            dscpmap: 0
+          - dscpid: 49
+            dscpmap: 0
+          - dscpid: 50
+            dscpmap: 0
+          - dscpid: 51
+            dscpmap: 0
+          - dscpid: 52
+            dscpmap: 0
+          - dscpid: 53
+            dscpmap: 0
+          - dscpid: 54
+            dscpmap: 0
+          - dscpid: 55
+            dscpmap: 0
+          - dscpid: 56
+            dscpmap: 0
+          - dscpid: 57
+            dscpmap: 0
+          - dscpid: 58
+            dscpmap: 0
+          - dscpid: 59
+            dscpmap: 0
+          - dscpid: 60
+            dscpmap: 0
+          - dscpid: 61
+            dscpmap: 0
+          - dscpid: 62
+            dscpmap: 0
+          - dscpid: 63
+            dscpmap: 0
+
+      ipdscp_queue_map_post:
+        type: array
+        items:
+          type: object
+          properties:
+            dscpid:
+              type: integer
+              minimum: 0
+              maximum: 63
+              description: Class identifier for this DSCP
+            dscpmap:
+              type: integer
+              minimum: 0
+              maximum: 7
+              description: Assigned queue number
+        example:
+          - dscpid: 0
+            dscpmap: 1
+          - dscpid: 1
+            dscpmap: 1
+
+      cos_queue_config:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: integer
+              minimum: 0
+              maximum: 7
+              description: Queue ID
+            min_bw:
+              type: integer
+              minimum: 0
+              maximum: 100
+              description: Minimum bandwidth percentage
+            mgmt_type:
+              type: string
+              enum:
+                - TailDrop
+                - Wred
+              description: CoS Management Type
+            schedule_type:
+              type: string
+              enum:
+                - Weighted
+                - Strict
+              description: CoS Schedule Type
+        example:
+          - id: 0
+            min_bw: 1
+            mgmt_type: TailDrop
+            schedule_type: Weighted
+          - id: 1
+            min_bw: 1
+            mgmt_type: WRED
+            schedule_type: Strict
+          - id: 2
+            min_bw: 1
+            mgmt_type: TailDrop
+            schedule_type: Weighted
+          - id: 3
+            min_bw: 1
+            mgmt_type: WRED
+            schedule_type: Strict
+          - id: 4
+            min_bw: 1
+            mgmt_type: TailDrop
+            schedule_type: Weighted
+          - id: 5
+            min_bw: 1
+            mgmt_type: WRED
+            schedule_type: Strict
+          - id: 6
+            min_bw: 1
+            mgmt_type: TailDrop
+            schedule_type: Weighted
+          - id: 7
+            min_bw: 1
+            mgmt_type: WRED
+            schedule_type: Strict
+
+
+
+      snooping_vlan:
+        type: array
+        items:
+          type: object
+          properties:
+            vlanId:
+              type: integer
+              description: VLAN ID
+            family:
+              type: string
+              enum:
+                - mld
+                - igmp
+              description: Snooping family
+            fastLeaveMode:
+              type: string
+              description: Snooping fast leave mode for the specified VLAN
+            vlanMode:
+              type: string
+              description: Snooping mode for the specified VLAN
+            reportSuppMode:
+              type: string
+              description: Snooping report suppression mode for the specified VLAN
+            proxyQuerierMode:
+              type: string
+              description: Proxy Querier Admin mode for the specified VLAN.
+            groupMembershipInterval:
+              type: integer
+              description: IGMP/MLD snooping group membership interval for the specified VLAN.
+            maxResponseTime:
+              type: integer
+              description: IGMP/MLD snooping maximum response time for the specified VLAN.
+        example:
+          - vlanId: 1
+            family: igmp
+            fastLeaveMode: enabled
+            vlanMode: disabled
+            reportSuppMode: disabled
+            proxyQuerierMode: enabled
+            groupMembershipInterval: 260
+            maxResponseTime: 10
+
+
+
+      snooping_config_get:
+        type: object
+        properties:
+          family:
+            type: string
+            enum:
+              - mdl
+              - igmp
+            description: Snooping family
+          adminMode:
+            type: string
+            enum:
+              - enabled
+              - disabled
+            description: IGMP/MLD Admin mode
+          proxyQuerierAdminMode:
+            type: string
+            enum:
+              - enabled
+              - disabled
+            description: IGMP/MLD Proxy Querier Admin Mode
+          floodAllUnknownPort:
+            type: string
+            enum:
+              - enabled
+              - disabled
+            description: Flood unknown multicast traffic to all ports.
+          controlFrames:
+            type: integer
+            description: Number of multicast control frames processed by the CPU.
+          forwardedFrames:
+            type: integer
+            description: Number of multicast data frames forwarded by the CPU.
+        example:
+          adminMode: disabled
+          proxyQuerierAdminMode: disable
+          family: igmp
+          controlFrames: 0
+          forwardedFrames: 0
+          floodAllUnknownPort: enable
+
+      snooping_config_post:
+        type: object
+        properties:
+          family:
+            type: string
+            enum:
+              - mdl
+              - igmp
+            description: Snooping family
+          adminMode:
+            type: string
+            enum:
+              - enabled
+              - disabled
+            description: IGMP/MLD Admin mode
+          proxyQuerierAdminMode:
+            type: string
+            enum:
+              - enabled
+              - disabled
+            description: IGMP/MLD Proxy Querier Admin Mode
+          floodAllUnknownPort:
+            type: string
+            enum:
+              - enabled
+              - disabled
+            description: Flood unknown multicast traffic to all ports.
+        required:
+          - adminMode
+          - proxyQuerierAdminMode
+          - family
+          - floodAllUnknownPort
+        example:
+          family: igmp
+          adminMode: enabled
+          proxyQuerierAdminMode: disabled
+          floodAllUnknownPort: enabled
+
+      snooping_interfaces_get:
+        type: array
+        items:
+          type: object
+          properties:
+            interface:
+              type: integer
+              description: Port interface ID
+            fastLeaveAdminMode:
+              type: string
+              description: IGMP/MLD Snooping Fast leave admin mode
+            groupMembershipInterval:
+              type: integer
+              description: IGMP/MLD group membership interval
+            intfMode:
+              type: string
+              description: Snooping mode
+            proxyQuerierMode:
+              type: string
+              description: Proxy Querier Admin mode for the specified interface
+            responseTime:
+              type: integer
+              description: Query response time for the specified interface
+            family:
+              type: string
+              enum:
+                - mdl
+                - igmp
+              description: Snooping family
+              example: igmp
+          example:
+            - interface: 1
+              fastLeaveAdminMode: disabled
+              groupMembershipInterval: 262
+              intfMode: disabled
+              proxyQuerierMode: enabled
+              responseTime: 12
+              family: igmp
+
+      snooping_interfaces_post:
+        type: object
+        properties:
+          interface:
+            type: integer
+            description: Port interface ID
+          family:
+            type: string
+            enum:
+              - mdl
+              - igmp
+            description: Snooping family
+            example: igmp
+          fastLeaveAdminMode:
+            type: string
+            description: IGMP/MLD Snooping Fast leave admin mode
+          groupMembershipInterval:
+            type: integer
+            description: IGMP/MLD group membership interval
+          intfMode:
+            type: string
+            description: Snooping mode
+          proxyQuerierMode:
+            type: string
+            description: Proxy Querier Admin mode for the specified interface
+          responseTime:
+            type: integer
+            description: Query response time for the specified interface
+        required:
+          - interface
+          - fastLeaveAdminMode
+          - groupMembershipInterval
+          - intfMode
+          - proxyQuerierMode
+          - responseTime
+          - family
+        example:
+          interface: 1
+          fastLeaveAdminMode: disabled
+          groupMembershipInterval: 262
+          intfMode: disabled
+          proxyQuerierMode: enabled
+          responseTime: 12
+          family: igmp
+
+      snooping_queriers_get:
+        type: object
+        properties:
+          address:
+            type: string
+            description: Configured IP address of querier
+          adminMode:
+            type:  string
+            enum:
+              - enabled
+              - disabled
+            description: Querier enabled status
+          expiryInterval:
+            type: integer
+            minimum: 60
+            maximum: 300
+            description: Expiry interval of a snoop instance in seconds
+          lastQuerierAddress:
+            type: string
+            description: Last IP address detected for querier
+          lastQuerierVersion:
+            type: integer
+            description: Last version detected for querier
+          operMaxRespTime:
+            type: integer
+            description: Operational value of max response time in seconds
+          operState:
+            type: string
+            description: Operational state of querier
+          operVersion:
+            type: integer
+            description: Operational version of querier
+          queryInterval:
+            type:  integer
+            minimum: 1
+            maximum: 1800
+            description: Snooping query interval in seconds
+          querierVersion:
+            type:  integer
+            minimum: 1
+            maximum: 2
+            description: Configured version for querier
+          vlanAddress:
+            type: string
+            description: IP address configured for the querier.
+          vlanElectionMode:
+            type:  string
+            enum:
+              - enabled
+              - disabled
+            description: Configured snooping querier election mode for the VLAN ID
+          vlanMode:
+            type:  string
+            enum:
+              - enabled
+              - disabled
+            description: Configured snooping querier mode for the VLAN ID
+        example:
+          family: igmp
+          address: 0.0.0.0
+          adminMode: enabled
+          expiryInterval: 120
+          lastQuerierAddress: 169.254.100.100
+          lastQuerierVersion: 1
+          operMaxRespTime: 10
+          operState: querier
+          operVersion: 1
+          queryInterval: 81
+          querierVersion: 1
+          vlanAddress: 0.0.0.0
+          vlanElectionMode: enabled
+          vlanMode: enabled
+
+      snooping_queriers_post:
+        type: object
+        properties:
+          address:
+            type: string
+            description: Configured IP address of querier
+          adminMode:
+            type:  string
+            enum:
+              - enabled
+              - disabled
+            description: Enable or disable querier
+          expiryInterval:
+            type: integer
+            minimum: 60
+            maximum: 300
+            description: Expiry interval of a snoop instance in seconds
+          queryInterval:
+            type:  integer
+            minimum: 1
+            maximum: 1800
+            description: Snooping query interval in seconds
+          querierVersion:
+            type:  integer
+            minimum: 1
+            maximum: 2
+            description: Configured version for the querier
+          vlanAddress:
+            type: string
+            description: IP address configured for the querier
+        required:
+          - address
+          - adminMode
+          - expiryInterval
+          - queryInterval
+          - querierVersion
+          - vlanAddress
+          - vlanElectionMode
+        example:
+          address: 0.0.0.0
+          adminMode: enabled
+          expiryInterval: 126
+          queryInterval: 63
+          querierVersion: 1
+          vlanAddress: 192.168.55.22
+          vlanElectionMode: enabled
+
+
+
+      ip_route_table:
+        type: object
+        properties:
+          nextHopIntf:
+            type: string
+            description: Name of interface for next hop
+          routeMask:
+            type: string
+            description: Route mask
+          nextHopAddr:
+            type: string
+            description: IP address for next hop
+          routeType:
+            type: string
+            description: Type of route
+          routeProto:
+            type: string
+            description: Learned route protocol
+          routeDest:
+            type: string
+            description: Next destination
+          metric:
+            type: integer
+            description: Routing metric
+          routePref:
+            type: integer
+            minimum: 1
+            maximum: 255
+            description: Preference of route
+        example:
+          nextHopIntf: vlan 1
+          routeMask: 0.0.0.0
+          nextHopAddr: 192.168.5.1
+          routeType: Default
+          routeProto: static
+          routeDest: 0.0.0.0
+          metric: 1
+          routePref: 254
+
+      host_table:
+        type: object
+        properties:
+          ipAddr:
+            type: string
+            description: IP Address
+            example: 10.120.166.108
+          macAddr:
+            type: string
+            description: MAC Address
+            example: B0:39:56:8D:2D:E4
+          vlanId:
+            type: integer
+            minimum: 1
+            maximum: 4096
+            description: VLAN ID
+            example: 3
+
+
+
+      stp:
+        type: object
+        properties:
+          status:
+            type: boolean
+            default: true
+            description: STP/RSTP/MST enabled status
+          rootBridgePriority:
+            type: integer
+            default: 32768
+            description: Bridge priority
+          stpMode:
+            type: integer
+            default: 2
+            enum:
+              - 0
+              - 1
+              - 2
+              - 3
+            description: >
+              Selection STP state:
+                * `0` = STP
+                * `1` = Unused
+                * `2` = RSTP
+                * `3` = MST
+          rootBridgeId:
+            type: string
+            description: Root bridge MAC address
+          ports:
+            type: array
+            description: Ports with STP enabled
+            items:
+              type: integer
+          lagGroupID:
+            type: array
+            description: Lag Group IDs.
+            items:
+              type: integer
+        required:
+          - status
+          - rootBridgePriority
+          - stpMode
+          - rootBridgeId
+          - ports
+          - lagGroupID
+        example:
+          status: true
+          rootBridgePriority: 32768
+          stpMode: 0
+          rootBridgeId: ''
+          ports: [1, 2, 3]
+          lagGroupID: [1, 2, 3]
+
+      dot1d_stp_entries:
+        type: array
+        items:
+          type: object
+          properties:
+            port:
+              type: integer
+              description: Port interface number
+            priority:
+              type: integer
+              description: Spanning Tree port priority
+            state:
+              type: string
+              description: Spanning Tree port state
+            pathCost:
+              type: integer
+              description: Spanning Tree path cost for the port.
+            designatedRoot:
+              type: string
+              description: Spanning Tree designated root for the switch.
+            designatedCost:
+              type: integer
+              description: Spanning Tree designated cost for the port
+            designatedBridge:
+              type: string
+              description: Spanning Tree designated bridge for the port
+            designatedPort:
+              type: string
+              description: Spanning Tree designated port ID
+        example:
+          - port: 1
+            priority: 32768
+            state: enabled
+            pathCost: 1
+            designatedRoot: 80:00:8C:3B:AD:66:C6:98
+            designatedCost: 0
+            designatedBridge: 80:00:8C:3B:AD:66:C6:98
+            designatedPort: 80:0
+          - port: 52
+            priority: 32768
+            state: enabled
+            pathCost: 1
+            designatedRoot: 80:00:8C:3B:AD:66:C6:98
+            designatedCost: 0
+            designatedBridge: 80:00:8C:3B:AD:66:C6:98
+            designatedPort: 00:0
+
+      dot1d_stp_config:
+        type: object
+        properties:
+          protocolSpecification:
+            type: string
+            enum:
+              - dot1d
+              - unknown
+            description: STP protocol
+          priority:
+            type: integer
+            minimum: 0
+            maximum: 61440
+            description: Bridge priority and displayed in multiples of 4096
+          timeSinceTopologyChange:
+            type: integer
+            description: Time passed since topology change (seconds)
+          topChanges:
+            type: integer
+            description: Number of times topology changed.
+          designatedRoot:
+            type: string
+            description: Bridge identifier of the root bridge
+          rootCost:
+            type: integer
+            description: Value of the Root Path Cost for the common and internal spanning tree
+          rootPort:
+            type: integer
+            description: Root port identifier
+          maxAge:
+            type: integer
+            description: Maximum age
+          helloTime:
+            type: integer
+            description: Hello time
+          holdTime:
+            type: integer
+            description: Hold time
+          forwardDelay:
+            type: integer
+            description: Forward delay
+          bridgeMaxAge:
+            type: integer
+            description: Bridge maximum age
+          bridgeHelloTime:
+            type: integer
+            description: Bridge hello time
+          bridgeForwardDelay:
+            type: integer
+            description: Bridge forward delay
+        example:
+          protocolSpecification: dot1d
+          priority: 32768
+          timeSinceTopologyChange: 24140900
+          topChanges: 0
+          designatedRoot: 80:00:8C:3B:AD:66:C6:98
+          rootCost: 0
+          rootPort: 0
+          maxAge: 20
+          helloTime: 2
+          holdTime: 6
+          forwardDelay: 15
+          bridgeMaxAge: 20
+          bridgeHelloTime: 2
+          bridgeForwardDelay: 15
+
+      dot1s_interfaces_get:
+        type: array
+        items:
+          type: object
+          properties:
+            interface:
+              type: integer
+              description: Port interface number
+            bpduFilterMode:
+              type: boolean
+              default: false
+              description: BPDU filter mode
+            bpduFloodMode:
+              type: boolean
+              default: false
+              description: BPDU flood mode
+            intfEdgePortMode:
+              type: boolean
+              default: false
+              description: Interface edge port mode
+            intfGuardMode:
+              type: integer
+              enum:
+                - 0
+                - 1
+                - 2
+              description: >
+                STP Guard Mode:
+                  * `0` = Loop
+                  * `1` = Root
+                  * `2` = None
+            intfMode:
+              type: integer
+              default: true
+              description: Interface mode
+          example:
+            - interface: 1
+              bpduFilterMode: false
+              bpduFloodMode: false
+              intfEdgePortMode: false
+              intfGuardMode: 2
+              intfMode: true
+            - interface: 2
+              bpduFilterMode: false
+              bpduFloodMode: false
+              intfEdgePortMode: false
+              intfGuardMode: 2
+              intfMode: true
+
+      dot1s_interfaces_post:
+        type: object
+        properties:
+          interface:
+            type: integer
+            description: Port interface number
+          bpduFilterMode:
+            type: boolean
+            description: BPDU filter mode
+          bpduFloodMode:
+            type: boolean
+            description: BPDU flood mode
+          intfEdgePortMode:
+            type: boolean
+            description: Interface edge port mode
+          intfGuardMode:
+            type: integer
+            enum:
+              - 0
+              - 1
+              - 2
+            description: >
+              STP Gaurd Mode:
+                * `0` = Loop
+                * `1` = Root
+                * `2` = None
+          intfMode:
+            type: boolean
+            description: Interface Mode
+        example:
+          bpduFilterMode: true
+          bpduFloodMode: true
+          intfEdgePortMode: true
+          intfGuardMode: 2
+          intfMode: true
+
+      msti_get:
+        type: array
+        items:
+          type: object
+          properties:
+            mstId:
+              type: integer
+              description: MST Instance
+            priority:
+              type: integer
+              description: Instance priority
+            vlans:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: VLAN ID WRT Instance
+                  type:
+                    type: string
+                    description: VLAN Type
+                  name:
+                    type: string
+                    description: VLAN Name
+        example:
+          - mstId: 0
+            priority: 0
+            vlans:
+            - id: 1
+              type: Default
+              name: Default
+            - id: 201
+              type: Static
+              name: FacultyNetwork
+            - id: 202
+              type: Static
+              name: GuestNetwork
+          - mstId: 12
+            priority: 32768
+            vlans:
+            - id: 4089
+              type: Auto-Video
+              name: Auto-Video
+
+      msti_post:
+        type: object
+        properties:
+          vlanid:
+            type: integer
+            minimum: 1
+            maximum: 4093
+            description: VLAN ID
+            example: 1
+          priority:
+            type: integer
+            minimum: 0
+            maximum: 240
+            default: 128
+            description: msti priority
+            example: 128
+        required:
+          - vlanid
+          - priority
+
+
+
+      device_log_reader:
+        type: object
+        properties:
+          logs:
+            type: array
+            items:
+              type: string
+            description: Device Logs in buffer
+        example:
+          logs:
+            - '<15>1 2018-01-10T13:20:27.125+5:30Z VGC728XP-1 OpEN tRpcsrv.01000 - :openapi_logging.c(1294) 59563 %% ConfigAgent: GET /api/v1/test'
+            - '<15>1 2018-01-10T13:20:27.127+5:30Z VGC728XP-1 IP dtlTask - :ip_api.c(7848) 59564 %% Received an invalid ip packet on g1: length 16384 Src ip 224.0.0.251 Src port is Null Dst ip 20.233.20.233 Dst port is Null'
+
+
+
+      ping_test_start:
+        type: object
+        properties:
+          action:
+            type: integer
+            enum:
+              - 1
+              - 0
+            description: >
+              Action to start ping:
+                * `1` = Start
+                * `0` = Stop
+          ipVersion:
+            type: integer
+            default: 4
+            enum:
+              - 4
+              - 6
+            description: >
+              IP address version:
+                * `4` = IPv4
+                * `6` = IPv6
+          host:
+            type: string
+            description: Hostname/IP address
+          count:
+            type: integer
+            minimum: 1
+            maximum: 1024
+            default: 3
+            description: Number of echo requests sent
+          size:
+            type: integer
+            minimum: 1
+            maximum: 655535
+            default: 64
+            description: Size of ping packet
+          timeout:
+            type: integer
+            minimum: 1
+            maximum: 300
+            default: 60
+            description: Time out value in seconds
+          interval:
+            type: string
+            minimum: 0.5
+            maximum: 10
+            description: Interval between ping packets in seconds
+        required:
+          - action
+          - host
+        example:
+          action: 1
+          ipVersion: 4
+          host: 1.1.1.1
+          count: 3
+          size: 64
+          timeout: 60
+          interval: 1
+
+      ping_test_status:
+        type: object
+        properties:
+          state:
+            type: integer
+            enum:
+              - 0
+              - 1
+              - 2
+            description: >
+              Ping Test State:
+                * `0` = PT_SUCCESS
+                * `1` = PT_IN_PROGRESS
+                * `2` = PT_FAILURE
+            example: 0
+          pingMsg:
+            type: string
+            description: Response for Ping message.
+            example: '....'
+
+      traceroute_start:
+        type: object
+        properties:
+          action:
+            type: integer
+            enum:
+              - 1
+              - 0
+            description: >
+              Traceroute action:
+                * `1` = Start
+                * `0` = Stop
+          host:
+            type: string
+            description: Traceroute host or IP
+            default: www.netgear.com
+          size:
+            type: integer
+            minimum: 38
+            maximum: 32768
+            description: Size of probe packets
+            default: 38
+          ipVersion:
+            type: integer
+            enum:
+              - 4
+              - 6
+            description: >
+              IP address version:
+                * `4` = IPv4
+                * `6` = IPv6
+            default: 4
+          initTTL:
+            type: integer
+            minimum: 1
+            maximum: 255
+            description:  Initial Time To Live to be used
+            default: 1
+          maxTTL:
+            type: integer
+            minimum: 1
+            maximum: 255
+            description: Maximum Time To Live for the destination
+            default: 30
+          port:
+            type: integer
+            minimum: 1
+            maximum: 65535
+            description: UDP destination port for probe packets
+            default: 33434
+          nQueries:
+            type: integer
+            minimum: 1
+            maximum: 10
+            description: Number of probes per hop
+            default: 3
+          wait:
+            type: integer
+            minimum: 1
+            maximum: 60
+            description: Time between probes in seconds
+            default: 3
+        required:
+          - action
+          - host
+        example:
+          action: 1
+          host: www.netgear.com
+          size: 38
+          ipVersion: 4
+          initTTL: 1
+          maxTTL: 300
+          port: 33434
+          nQueries: 3
+          wait: 3
+
+      traceroute_status:
+        type: object
+        properties:
+          state:
+            type: integer
+            enum:
+              - 0
+              - 1
+              - 2
+            description: >
+              Traceroute Test State:
+                * `0` = PT_SUCCESS
+                * `1` = PT_IN_PROGRESS
+                * `2` = PT_FAILURE
+            example: 0
+          tracerouteMsg:
+            type: string
+            description: Response message for traceroute
+            example: '....'
+
+      sw_portmirroring:
+        type: object
+        properties:
+          sessionNum:
+            type: integer
+            minimum: 1
+            maximum: 4
+            description: Port mirroring session number
+          sessionMode:
+            type: boolean
+            description: Port mirroring admin mode configuration
+          destPort:
+            type: integer
+            description: Destination or probe port ID. No ports selected when set to `0`.
+          srcPort:
+            type: array
+            items:
+              type: object
+              properties:
+                intfType:
+                  type: integer
+                  enum:
+                    - 0
+                    - 1
+                    - 2
+                    - 3
+                    - 4
+                    - 5
+                    - 6
+                    - 7
+                    - 8
+                  description: >
+                    Source port capture type:
+                      * `0` = INTF_TYPE_PHY
+                      * `1` = INTF_TYPE_CPU
+                      * `2` = INTF_TYPE_LAG
+                      * `3` = INTF_TYPE_VLAN
+                      * `4` = INTF_TYPE_LOOPBACK
+                      * `5` = INTF_TYPE_TUNNEL
+                      * `6` = INTF_TYPE_SERVICE_PORT
+                      * `7` = INTF_TYPE_OTHER
+                      * `8` = INTF_TYPE_ANY
+                intfNum:
+                  type: integer
+                  description: Source port interface number
+                direction:
+                  type: integer
+                  enum:
+                    - 1
+                    - 2
+                    - 3
+                    - 4
+                  description: >
+                    Source port capture direction:
+                      * `1` = BIDIRECTIONAL
+                      * `2` = INGRESS
+                      * `3` = EGRESS
+                      * `4` = SFLOW
+              required:
+                - intfType
+                - intfNum
+                - direction
+        required:
+          - sessionNum
+          - sessionMode
+          - destPort
+        example:
+          sessionNum: 1
+          sessionMode: false
+          destPort: 10
+          srcPort:
+            - intfType: 0
+              intfNum: 24
+              direction: 1
+            - intfType: 1
+              intfNum: 313
+              direction: 1
+            - intfType: 2
+              intfNum: 320
+              direction: 1
+
+      device_cable_test:
+        type: object
+        properties:
+          status:
+            type: integer
+            enum:
+              - 0
+              - 1
+              - 2
+              - 3
+              - 4
+              - 5
+              - 6
+              - 7
+            description: >
+              Status of the cable test:
+                * `0` = Untested
+                * `1` = Fail
+                * `2` = Normal
+                * `3` = Open
+                * `4` = Short
+                * `5` = Open Short
+                * `6` = Cross Talk
+                * `7` = No Cable
+          lenKnown:
+            type: integer
+            description: Length of Cable in meters. (0 if not known)
+          shortestLen:
+            type: integer
+            description: Cable length range shorter limit in meters.
+          longestLen:
+            type: integer
+            description: Cable length range longer limit in meters.
+          cableFailureLen:
+            type: integer
+            description: Distance along cable to detected fault.
+        example:
+          status: 2
+          lenKnown: 1
+          shortestLen: 0
+          longestLen: 12
+          cableFailureLen: 0
+
+
+
+
+      general_responses_code:
+        type: object
+        properties:
+          status:
+            type: string
+            enum:
+              - success
+              - failure
+            example: success
+          respCode:
+            type: integer
+            example: 0
+          respMsg:
+            type: string
+            example: Operation success
