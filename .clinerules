@@ -129,6 +129,27 @@ RELEASE_CHECKLIST {
     ]
 }
 
+AUTOMATION_REQUIREMENTS {
+    REQUIRED: Run pre-commit validation
+    REQUIRED: Check task transition format
+    REQUIRED: Validate branch naming
+    REQUIRED: Verify documentation updates
+}
+
+TASK_MANAGEMENT {
+    REQUIRED: Follow task transition format
+    REQUIRED: Update todo.md status
+    REQUIRED: Document task dependencies
+    REQUIRED: Track completion criteria
+}
+
+DEVELOPMENT_TOOLS {
+    REQUIRED: Use MCP server for development
+    REQUIRED: Run validation scripts
+    REQUIRED: Follow helper templates
+    REQUIRED: Document tool usage
+}
+
 DEFERRED_REQUIREMENTS {
     LOCATION: COMPLIANCE.md
     NOTE: "Infrastructure and advanced features for post-release"
