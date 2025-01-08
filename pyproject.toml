@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "m4300api-helpers"
+version = "0.1.0"
+description = "Helper tools for M4300 API"
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+packages = [{include = "m4300api_helpers", from = "src"}]
+
+[tool.poetry.dependencies]
+python = "^3.12"
+requests = "^2.31.0"
+pyyaml = "^6.0.1"
+rich = "^13.7.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.0.0"
+pytest-cov = "^4.1.0"
+pytest-mock = "^3.12.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+m4300-validate = "m4300api_helpers.cli:main"
+m4300-generate-swagger = "m4300api_helpers.generate_swagger:main"
+m4300-generate-markdown = "m4300api_helpers.generate_markdown:main"
