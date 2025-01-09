@@ -56,7 +56,7 @@ def test_live_logout_success(auth_token, switch_config):
     assert result["resp"]["respCode"] == 0
     
     # Verify token is invalidated by attempting reuse
-    with pytest.raises(RuntimeError, match="API request failed:"):
+    with pytest.raises(RuntimeError, match="Logout failed:"):
         logout(switch_config["base_url"], auth_token)
 
 @pytest.mark.integration
@@ -68,7 +68,7 @@ def test_live_logout_invalid_token(switch_config):
         - Error message format
         - RuntimeError exception
     """
-    with pytest.raises(RuntimeError, match="API request failed:"):
+    with pytest.raises(RuntimeError, match="Logout failed:"):
         logout(
             switch_config["base_url"],
             "invalid_token_123"
@@ -87,7 +87,7 @@ def test_live_logout_expired_token(auth_token, switch_config):
     logout(switch_config["base_url"], auth_token)
     
     # Attempt to reuse invalidated token
-    with pytest.raises(RuntimeError, match="API request failed:"):
+    with pytest.raises(RuntimeError, match="Logout failed:"):
         logout(switch_config["base_url"], auth_token)
 
 @pytest.mark.integration
@@ -101,5 +101,5 @@ def test_live_logout_invalid_url(auth_token, switch_config):
     """
     # Modify port to create invalid URL
     base_url = switch_config["base_url"].replace(":8443", ":9999")
-    with pytest.raises(RuntimeError, match="API request failed:"):
+    with pytest.raises(RuntimeError, match="Logout failed:"):
         logout(base_url, auth_token)
