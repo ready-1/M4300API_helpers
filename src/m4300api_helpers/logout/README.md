@@ -22,9 +22,11 @@ result = logout(
    - Don't trust visual representation in logs/errors
 
 2. Error Handling
-   - All errors start with "API request failed:"
-   - Includes specific error details after prefix
-   - Handles both API and network errors
+   - All errors use "Logout failed:" prefix
+   - Network errors: "Logout failed: Connection error"
+   - Invalid token: "Logout failed: Invalid token"
+   - Invalid format: "Logout failed: Invalid response format"
+   - See error handling documentation for details
 
 3. Response Structure
 ```python
@@ -46,16 +48,39 @@ result = logout(
    - Use systematic verification to validate actual data
 
 2. Error Messages
-   - Must follow "API request failed:" pattern
-   - Include specific error details
-   - Match test expectations
+   - All errors use consistent "Logout failed:" prefix
+   - Includes specific error details after prefix
+   - See test cases for expected formats
 
 ## Testing
 
-Run integration tests:
+The implementation has 100% test coverage across all code paths:
+
+1. Unit Tests:
+```bash
+pytest -v tests/test_logout.py
+```
+- Input validation
+- Response parsing
+- Error handling
+- Edge cases
+
+2. Integration Tests:
 ```bash
 pytest -v --run-integration tests/test_logout_integration.py
 ```
+- Live API interaction
+- Token invalidation
+- Network errors
+- Real error responses
+
+3. Security Tests:
+```bash
+bandit -r src/m4300api_helpers/logout/
+```
+- SSL certificate handling
+- Input validation
+- Error message safety
 
 ## Documentation
 
