@@ -159,7 +159,8 @@ def test_invalid_json_response(mocker):
     """
     mock_post = mocker.patch('requests.post')
     mock_post.return_value.json.side_effect = json.JSONDecodeError("Invalid JSON", "", 0)
+    mock_post.return_value.text = "Invalid JSON response"
     mock_post.return_value.raise_for_status.return_value = None
     
-    with pytest.raises(RuntimeError, match="Login failed: Invalid JSON"):
+    with pytest.raises(RuntimeError, match="Login failed: Invalid JSON response"):
         login("https://192.168.99.92:8443", "admin", "password123")
