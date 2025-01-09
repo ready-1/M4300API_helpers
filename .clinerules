@@ -54,6 +54,7 @@ IMPLEMENTATION {
         REQUIRED: Handle errors
         REQUIRED: Log interactions
         REQUIRED: Restart Cline after changes
+        REQUIRED: User must restart MCP server after changes
         FORBIDDEN: Run server directly
     }
 }
