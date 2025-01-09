@@ -1,0 +1,72 @@
+==== ENDPOINT ====
+POST /api/v1/login
+
+==== PDF DOCUMENTATION ====
+
+1.1 POST /login
+Logging into device
+REQUEST
+REQUEST BODY - application/json
+{
+login {
+username* string Admin username
+password* string Admin user's password
+}
+}
+RESPONSE
+STATUS CODE - 200: successful operation
+RESPONSE MODEL - application/json
+{
+resp {
+status enum ALLOWED:success, failure
+respCode integer
+respMsg string
+}
+login {
+token string Auth token string used to for subsequent requests at `Authorization` header.
+expires integer Duration for token to expire in seconds
+}
+}
+
+==== WORKING PYTHON CODE FROM POSTMAN ====
+'''
+import requests
+import json
+
+url = "https://192.168.99.92:8443/api/v1/login"
+
+payload = json.dumps({
+  "login": {
+    "username": "admin",
+    "password": "password123"
+  }
+})
+headers = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+
+response = requests.request("POST", url, headers=headers, data=payload)
+
+print(response.text)
+
+
+'''
+
+==== ACTUAL LIVE RESPONSE FROM POSTMAN FOR THE ABOVE CODE ====
+Status: HTTP 1.1 200 OK
+
+'''
+{
+	"login":	{
+		"token":	"8c523ad44e0a8f46324aa71f371963e07211b04b7239519a6f60f1ee5939dcc0b1db6b49394ff6866a67c45a396993f9a21359c3abe595821f579cfd25fafeeb",
+		"expire":	"86400"
+	},
+	"resp":	{
+		"status":	"success",
+		"respCode":	0,
+		"respMsg":	"Operation success"
+	}
+}
+'''
+
