@@ -1,8 +1,12 @@
 """Helper module for login endpoint interactions."""
 import json
 from typing import Dict, Any
+import urllib3
 import requests
 from requests.exceptions import RequestException
+
+# Disable only the InsecureRequestWarning
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 def login(base_url: str, username: str, password: str) -> Dict[str, Any]:
     """Login to device and obtain authentication token.
@@ -55,22 +59,25 @@ def login(base_url: str, username: str, password: str) -> Dict[str, Any]:
     }
     
     try:
-        response = requests.post(url, headers=headers, data=json.dumps(payload))
+        response = requests.post(url, headers=headers, data=json.dumps(payload), verify=False)
         response.raise_for_status()  # Raises HTTPError for bad responses
         
-        data = response.json()
-        
-        # Check for error response first
-        if data.get("resp", {}).get("status") == "failure":
-            raise RuntimeError(f"Login failed: {data['resp']['respMsg']}")
-        
-        # Then validate response structure
-        if not data.get("login", {}).get("token") or "status" not in data.get("resp", {}):
-            raise RuntimeError("Invalid response format")
-        
-        return data
+        try:
+            data = response.json()
+            # Check for error response first
+            if data.get("resp", {}).get("status") == "failure":
+                raise RuntimeError(f"Login failed: {data['resp']['respMsg']}")
+            
+            # Then validate response structure
+            if not data.get("login", {}).get("token") or "status" not in data.get("resp", {}):
+                raise RuntimeError("Invalid response format")
+            
+            return data
+        except json.JSONDecodeError:
+                # Handle non-JSON responses (like plain text error messages)
+                error_text = response.text.strip()
+                # All plain text responses are login failures
+                raise RuntimeError(f"Login failed: {error_text}")
         
     except RequestException as e:
         raise RuntimeError(f"API request failed: {str(e)}")
-    except json.JSONDecodeError:
-        raise RuntimeError("Invalid JSON response")
