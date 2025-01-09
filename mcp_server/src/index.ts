@@ -70,18 +70,25 @@ class HelloWorldServer {
   async run() {
     try {
       const transport = new StdioServerTransport();
-      process.stdin.setEncoding('utf8');
-      process.stdout.setEncoding('utf8');
-      
       await this.server.connect(transport);
       console.error('Hello World MCP server running on stdio');
       
-      // Keep process alive
+      // Keep the process alive
       process.stdin.resume();
+      
+      // Handle graceful shutdown
+      const cleanup = () => {
+        console.error('Server shutting down');
+        this.server.close().catch(console.error);
+      };
+      
+      process.on('SIGINT', cleanup);
+      process.on('SIGTERM', cleanup);
+      
     } catch (error) {
       const err = error as Error;
       console.error('Failed to start server:', err.message);
-      throw err;
+      process.exit(1);
     }
   }
 }
