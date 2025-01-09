@@ -100,3 +100,6 @@ local_settings.py
 db.sqlite3
 db.sqlite3-journal
 *.db
+
+# Local Ignored Files
+docs/dev/_interactive-swagger_m4300_api_docs_2_0_0_59_src
