@@ -164,3 +164,137 @@ DEFERRED_REQUIREMENTS {
         - Load testing
     ]
 }
+
+ENDPOINT_DEVELOPMENT_WORKFLOW {
+    REQUIRED: Follow OODA loop for each phase
+    REQUIRED: Document all decisions
+    FORBIDDEN: Skip validation steps
+    
+    INFORMATION_PHASE {
+        OBSERVE {
+            REQUIRED: Collect all information sources
+            REQUIRED: Store in mcp_info/[METHOD]_[endpoint].txt
+            REQUIRED: Use standard format
+            
+            SOURCES [
+                1. Postman (working examples)
+                2. PDF (official documentation)
+                3. Swagger (API specification)
+                4. Known issues (if any)
+            ]
+        }
+
+        ORIENT {
+            REQUIRED: Cross-reference all sources
+            REQUIRED: Identify discrepancies
+            REQUIRED: Note uncertainties
+            
+            CONFIDENCE_LEVELS [
+                4: Live tested      // Verified on actual switch
+                3: Postman verified // Working in Postman
+                2: Documented       // In official docs
+                1: Unverified      // Needs confirmation
+            ]
+        }
+
+        DECIDE {
+            REQUIRED: Determine true behavior
+            REQUIRED: Document confidence scores
+            REQUIRED: Note required tests
+        }
+
+        ACT {
+            REQUIRED: Update MCP server
+            REQUIRED: Store examples
+            REQUIRED: Document findings
+        }
+    }
+
+    IMPLEMENTATION_PHASE {
+        OBSERVE {
+            REQUIRED: Review MCP knowledge
+            REQUIRED: Check similar endpoints
+            REQUIRED: Note edge cases
+        }
+
+        ORIENT {
+            REQUIRED: Plan implementation
+            REQUIRED: Design tests
+            REQUIRED: Consider error cases
+        }
+
+        DECIDE {
+            REQUIRED: Choose implementation approach
+            REQUIRED: Define type structure
+            REQUIRED: Plan error handling
+        }
+
+        ACT {
+            REQUIRED: Implement helper
+            REQUIRED: Write tests
+            REQUIRED: Add documentation
+            REQUIRED: Generate examples
+        }
+    }
+
+    VERIFICATION_PHASE {
+        OBSERVE {
+            REQUIRED: Run all tests
+            REQUIRED: Test live switch
+            REQUIRED: Check edge cases
+        }
+
+        ORIENT {
+            REQUIRED: Analyze results
+            REQUIRED: Compare to expected
+            REQUIRED: Note any issues
+        }
+
+        DECIDE {
+            REQUIRED: Determine if complete
+            REQUIRED: Plan any fixes
+            REQUIRED: Update confidence
+        }
+
+        ACT {
+            REQUIRED: Make improvements
+            REQUIRED: Update documentation
+            REQUIRED: Commit changes
+        }
+    }
+
+    QUALITY_REQUIREMENTS {
+        DOCUMENTATION {
+            REQUIRED: Standard format used
+            REQUIRED: All sections complete
+            REQUIRED: Examples included
+            REQUIRED: Issues documented
+            FORBIDDEN: Missing confidence scores
+        }
+
+        IMPLEMENTATION {
+            REQUIRED: Type safety
+            REQUIRED: Error handling
+            REQUIRED: Edge cases covered
+            REQUIRED: Clear interface
+            FORBIDDEN: Untested code
+        }
+
+        VERIFICATION {
+            REQUIRED: Unit tests pass
+            REQUIRED: Integration tests pass
+            REQUIRED: Live switch tested
+            REQUIRED: Examples work
+            FORBIDDEN: Known issues untracked
+        }
+    }
+
+    COMPLETION_CRITERIA [
+        1. All phases completed
+        2. All tests passing
+        3. Live switch verified
+        4. Documentation complete
+        5. MCP server updated
+        6. Changes committed
+    ]
+}
