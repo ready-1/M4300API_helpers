@@ -60,14 +60,14 @@ def login(base_url: str, username: str, password: str) -> Dict[str, Any]:
         
         data = response.json()
         
-        # Validate response structure
+        # Check for error response first
+        if data.get("resp", {}).get("status") == "failure":
+            raise RuntimeError(f"Login failed: {data['resp']['respMsg']}")
+        
+        # Then validate response structure
         if not data.get("login", {}).get("token") or "status" not in data.get("resp", {}):
             raise RuntimeError("Invalid response format")
-            
-        # Check for error response
-        if data["resp"]["status"] == "failure":
-            raise RuntimeError(f"Login failed: {data['resp']['respMsg']}")
-            
+        
         return data
         
     except RequestException as e:
