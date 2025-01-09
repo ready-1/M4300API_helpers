@@ -1,300 +1,136 @@
-CRITICAL_RULES_VALIDATION_REQUIRED {
-    LOCATION: .clinerules.critical
+CRITICAL_RULES {
     REQUIRED: Validate before each tool use
-    REQUIRED: Validate before each command
-    REQUIRED: Validate before each sequence
+    REQUIRED: Document key decisions
+    REQUIRED: Handle errors systematically
+    FORBIDDEN: Skip validation steps
 }
 
-OODA_LOOP_WORKFLOW {
-    REQUIRED: Follow OODA loop for all operations
-    REQUIRED: Document thinking in OODA structure
-    FORBIDDEN: Skip any OODA phase
-    
-    OBSERVE {
-        REQUIRED: Gather current implementation state
-        REQUIRED: Review relevant documentation
-        REQUIRED: Check live API behavior
-        REQUIRED: Note any discrepancies
-        FORBIDDEN: Make assumptions without validation
+WORKFLOW {
+    CHECK {
+        REQUIRED: Validate current state
+        REQUIRED: Review documentation
+        REQUIRED: Test behavior
+        FORBIDDEN: Make assumptions
     }
     
-    ORIENT {
-        REQUIRED: Analyze gathered information
-        REQUIRED: Consider project architecture
-        REQUIRED: Identify dependencies
-        REQUIRED: Assess potential impacts
-        FORBIDDEN: Skip impact analysis
+    PLAN {
+        REQUIRED: Identify risks
+        REQUIRED: Consider impacts
+        REQUIRED: Note dependencies
     }
     
-    DECIDE {
-        REQUIRED: Outline specific approach
-        REQUIRED: Justify chosen approach
-        REQUIRED: Consider alternatives
-        REQUIRED: Break down into steps
-        FORBIDDEN: Proceed without clear plan
+    EXECUTE {
+        REQUIRED: One change at a time
+        REQUIRED: Follow test plan
+        REQUIRED: Document changes
     }
     
-    ACT {
-        REQUIRED: Execute one tool at a time
-        REQUIRED: Wait for feedback after each action
-        REQUIRED: Validate results
-        REQUIRED: Document outcomes
-        FORBIDDEN: Multiple simultaneous actions
+    VERIFY {
+        REQUIRED: Run all tests
+        REQUIRED: Check documentation
+        REQUIRED: Confirm behavior
     }
 }
 
-IMPLEMENTATION_WORKFLOW {
-    VALIDATION_SCRIPTS {
-        REQUIRED: Execute in correct order
-        REQUIRED: validate_endpoint.sh first for API validation
-        REQUIRED: validate_helper.sh as completion checkpoint
-        REQUIRED: Save all validation outputs
-        REQUIRED: Review and fix ALL warnings
-        
-        CHECKPOINT_VALIDATION {
-            REQUIRED: Run before considering endpoint complete
-            REQUIRED: Verify module structure
-            REQUIRED: Check code requirements
-            REQUIRED: Validate test coverage
-            REQUIRED: Confirm documentation
-            REQUIRED: Verify MCP integration
-        }
+IMPLEMENTATION {
+    VALIDATION {
+        REQUIRED: Run validate_endpoint.sh first
+        REQUIRED: Run validate_helper.sh before completion
+        REQUIRED: Fix ALL warnings
     }
 
-    REQUIRED: Follow helper module template
-    REQUIRED: Base code on live API responses
-    REQUIRED: Handle undocumented fields
-    REQUIRED: Include example responses
-    FORBIDDEN: Implement without validation
-
-    MCP_INTEGRATION {
-        REQUIRED: Follow sequential operation pattern
-        REQUIRED: Document tool parameters
-        REQUIRED: Handle all error cases
-        REQUIRED: Verify operation results
-        REQUIRED: Log all MCP interactions
+    CODE {
+        REQUIRED: Follow helper template
+        REQUIRED: Use live API responses
+        REQUIRED: Handle edge cases
+        REQUIRED: Add tests
+        REQUIRED: Document usage
     }
+
+    MCP {
+        REQUIRED: One operation at a time
+        REQUIRED: Handle errors
+        REQUIRED: Log interactions
+    }
+}
+
+ERROR_HANDLING {
+    REQUIRED: Stop on new issues
+    REQUIRED: Document errors
+    REQUIRED: Test fixes
+    REQUIRED: Verify recovery
+    FORBIDDEN: Continue with known issues
+}
+
+DEVELOPMENT {
+    BRANCH_NAMING {
+        FORMAT: "endpoint/<endpoint_url>"
+        EXAMPLE: "endpoint/login"
+        REQUIRED: Follow format exactly
+        FORBIDDEN: Use other formats
+    }
+
+    REQUIRED: One branch per endpoint
+    REQUIRED: Clear commit messages
+    REQUIRED: Complete validation before merge
+    REQUIRED: Update documentation
+}
+
+ENDPOINT_WORKFLOW {
+    INFORMATION {
+        REQUIRED: Check Postman examples
+        REQUIRED: Review API docs
+        REQUIRED: Test with live switch
+        REQUIRED: Document findings
+    }
+
+    IMPLEMENTATION {
+        REQUIRED: Follow test plan
+        REQUIRED: Write tests first
+        REQUIRED: Handle errors
+        REQUIRED: Add documentation
+    }
+
+    VERIFICATION {
+        REQUIRED: All tests pass
+        REQUIRED: Live testing works
+        REQUIRED: Documentation complete
+        REQUIRED: Examples provided
+    }
+}
+
+QUALITY {
+    REQUIRED: Type safety
+    REQUIRED: Error handling
+    REQUIRED: Test coverage
+    REQUIRED: Clear interface
+    REQUIRED: Documentation
+    FORBIDDEN: Untested code
+}
+
+DOCUMENTATION {
+    REQUIRED: Document key decisions
+    REQUIRED: Note dependencies
+    REQUIRED: Record test cases
+    REQUIRED: Update examples
+    REQUIRED: Track changes
+}
+
+TESTING {
+    REQUIRED: Write tests first
+    REQUIRED: Cover edge cases
+    REQUIRED: Validate responses
+    REQUIRED: Document test cases
+    FORBIDDEN: Skip test steps
+}
+
+DEFERRED {
+    NOTE: "Features for post-release"
     
-    STRUCTURE {
-        REQUIRED: Use dataclass for response types
-        REQUIRED: Include type hints
-        REQUIRED: Add docstrings
-        REQUIRED: Implement error handling
-        REQUIRED: Follow naming conventions
-    }
-    
-    TESTING {
-        REQUIRED: Create unit tests
-        REQUIRED: Create integration tests
-        REQUIRED: Test error cases
-        REQUIRED: Validate inputs
-        REQUIRED: Mock responses match schema
-    }
-}
-
-DEVELOPMENT_WORKFLOW {
-    ENVIRONMENT {
-        REQUIRED: Poetry virtual environment
-        REQUIRED: Basic pre-commit hooks
-        REQUIRED: VSCode integration
-    }
-
-    VERSION_CONTROL {
-        REQUIRED: One branch per endpoint
-        REQUIRED: Clear commit messages
-        REQUIRED: Complete validation before merge
-    }
-
-    ERROR_HANDLING {
-        REQUIRED: Basic error classes
-        REQUIRED: Error context in logs
-        REQUIRED: Recovery procedures
-    }
-}
-
-RELEASE_CHECKLIST {
-    VERIFICATION [
-        1. All helpers implemented
-        2. Tests passing
-        3. Basic docs complete
-        4. Security validated
-        5. Example code working
-    ]
-
-    PACKAGING [
-        1. Version tagged
-        2. Dependencies locked
-        3. README updated
-        4. Changelog entry
-    ]
-}
-
-AUTOMATION_REQUIREMENTS {
-    REQUIRED: Run pre-commit validation
-    REQUIRED: Check task transition format
-    REQUIRED: Validate branch naming
-    REQUIRED: Verify documentation updates
-}
-
-TASK_MANAGEMENT {
-    REQUIRED: Follow task transition format
-    REQUIRED: Update todo.md status
-    REQUIRED: Document task dependencies
-    REQUIRED: Track completion criteria
-}
-
-DEVELOPMENT_TOOLS {
-    REQUIRED: Use MCP server for development
-    REQUIRED: Run validation scripts
-    REQUIRED: Follow helper templates
-    REQUIRED: Document tool usage
-}
-
-DEFERRED_REQUIREMENTS {
-    LOCATION: COMPLIANCE.md
-    NOTE: "Infrastructure and advanced features for post-release"
-    
-    DEFERRED_FEATURES [
+    FEATURES [
         - Performance monitoring
         - Extended documentation
         - Container support
         - CI/CD pipeline
-        - OWASP compliance
-        - Accessibility features
-        - Load testing
-    ]
-}
-
-ENDPOINT_DEVELOPMENT_WORKFLOW {
-    REQUIRED: Follow OODA loop for each phase
-    REQUIRED: Document all decisions
-    FORBIDDEN: Skip validation steps
-    
-    INFORMATION_PHASE {
-        OBSERVE {
-            REQUIRED: Collect all information sources
-            REQUIRED: Store in mcp_info/[METHOD]_[endpoint].txt
-            REQUIRED: Use standard format
-            
-            SOURCES [
-                1. Postman (working examples)
-                2. PDF (official documentation)
-                3. Swagger (API specification)
-                4. Known issues (if any)
-            ]
-        }
-
-        ORIENT {
-            REQUIRED: Cross-reference all sources
-            REQUIRED: Identify discrepancies
-            REQUIRED: Note uncertainties
-            
-            CONFIDENCE_LEVELS [
-                4: Live tested      // Verified on actual switch
-                3: Postman verified // Working in Postman
-                2: Documented       // In official docs
-                1: Unverified      // Needs confirmation
-            ]
-        }
-
-        DECIDE {
-            REQUIRED: Determine true behavior
-            REQUIRED: Document confidence scores
-            REQUIRED: Note required tests
-        }
-
-        ACT {
-            REQUIRED: Update MCP server
-            REQUIRED: Store examples
-            REQUIRED: Document findings
-        }
-    }
-
-    IMPLEMENTATION_PHASE {
-        OBSERVE {
-            REQUIRED: Review MCP knowledge
-            REQUIRED: Check similar endpoints
-            REQUIRED: Note edge cases
-        }
-
-        ORIENT {
-            REQUIRED: Plan implementation
-            REQUIRED: Design tests
-            REQUIRED: Consider error cases
-        }
-
-        DECIDE {
-            REQUIRED: Choose implementation approach
-            REQUIRED: Define type structure
-            REQUIRED: Plan error handling
-        }
-
-        ACT {
-            REQUIRED: Implement helper
-            REQUIRED: Write tests
-            REQUIRED: Add documentation
-            REQUIRED: Generate examples
-        }
-    }
-
-    VERIFICATION_PHASE {
-        OBSERVE {
-            REQUIRED: Run all tests
-            REQUIRED: Test live switch
-            REQUIRED: Check edge cases
-        }
-
-        ORIENT {
-            REQUIRED: Analyze results
-            REQUIRED: Compare to expected
-            REQUIRED: Note any issues
-        }
-
-        DECIDE {
-            REQUIRED: Determine if complete
-            REQUIRED: Plan any fixes
-            REQUIRED: Update confidence
-        }
-
-        ACT {
-            REQUIRED: Make improvements
-            REQUIRED: Update documentation
-            REQUIRED: Commit changes
-        }
-    }
-
-    QUALITY_REQUIREMENTS {
-        DOCUMENTATION {
-            REQUIRED: Standard format used
-            REQUIRED: All sections complete
-            REQUIRED: Examples included
-            REQUIRED: Issues documented
-            FORBIDDEN: Missing confidence scores
-        }
-
-        IMPLEMENTATION {
-            REQUIRED: Type safety
-            REQUIRED: Error handling
-            REQUIRED: Edge cases covered
-            REQUIRED: Clear interface
-            FORBIDDEN: Untested code
-        }
-
-        VERIFICATION {
-            REQUIRED: Unit tests pass
-            REQUIRED: Integration tests pass
-            REQUIRED: Live switch tested
-            REQUIRED: Examples work
-            FORBIDDEN: Known issues untracked
-        }
-    }
-
-    COMPLETION_CRITERIA [
-        1. All phases completed
-        2. All tests passing
-        3. Live switch verified
-        4. Documentation complete
-        5. MCP server updated
-        6. Changes committed
     ]
 }
