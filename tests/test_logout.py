@@ -103,6 +103,36 @@ def test_failed_logout(mocker, switch_config, test_token):
     with pytest.raises(RuntimeError, match="Logout failed: Invalid token"):
         logout(switch_config["base_url"], "invalid_token")
 
+def test_invalid_response_type(mocker, switch_config, test_token):
+    """Test handling of non-dict response.
+    
+    Verifies:
+        - Response type validation
+        - Error message format
+        - RuntimeError exception
+    """
+    mock_post = mocker.patch('requests.post')
+    mock_post.return_value.json.return_value = ["not", "a", "dict"]  # Invalid type
+    mock_post.return_value.raise_for_status.return_value = None
+    
+    with pytest.raises(RuntimeError, match="Logout failed: Invalid response type"):
+        logout(switch_config["base_url"], test_token)
+
+def test_missing_resp_field(mocker, switch_config, test_token):
+    """Test handling of missing resp field.
+    
+    Verifies:
+        - Response structure validation
+        - Error message format
+        - RuntimeError exception
+    """
+    mock_post = mocker.patch('requests.post')
+    mock_post.return_value.json.return_value = {"logout": {}}  # Missing resp field
+    mock_post.return_value.raise_for_status.return_value = None
+    
+    with pytest.raises(RuntimeError, match="Logout failed: Missing response data"):
+        logout(switch_config["base_url"], test_token)
+
 def test_invalid_response_format(mocker, switch_config, test_token):
     """Test handling of invalid response format.
     
@@ -115,7 +145,7 @@ def test_invalid_response_format(mocker, switch_config, test_token):
     mock_post.return_value.json.return_value = {"resp": {}}  # Missing logout object
     mock_post.return_value.raise_for_status.return_value = None
     
-    with pytest.raises(RuntimeError, match="Invalid response format"):
+    with pytest.raises(RuntimeError, match="Logout failed: Missing status"):
         logout(switch_config["base_url"], test_token)
 
 def test_request_exception(mocker, switch_config, test_token):
@@ -129,7 +159,22 @@ def test_request_exception(mocker, switch_config, test_token):
     mock_post = mocker.patch('requests.post')
     mock_post.side_effect = RequestException("Connection error")
     
-    with pytest.raises(RuntimeError, match="API request failed: Connection error"):
+    with pytest.raises(RuntimeError, match="Logout failed: Connection error"):
+        logout(switch_config["base_url"], test_token)
+
+def test_type_error_response(mocker, switch_config, test_token):
+    """Test handling of TypeError in response processing.
+    
+    Verifies:
+        - Type error handling
+        - Error message format
+        - RuntimeError exception
+    """
+    mock_post = mocker.patch('requests.post')
+    mock_post.return_value.json.return_value = {"resp": None}  # Will cause TypeError on dict access
+    mock_post.return_value.raise_for_status.return_value = None
+    
+    with pytest.raises(RuntimeError, match="Logout failed: Invalid response format"):
         logout(switch_config["base_url"], test_token)
 
 def test_invalid_json_response(mocker, switch_config, test_token):
