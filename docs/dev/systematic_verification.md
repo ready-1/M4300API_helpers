@@ -112,6 +112,64 @@ print(f'Raw response: {response.text}')
 4. Creates reproducible verification steps
 5. Separates behavior from appearance
 
+## M4300 API Response Format
+
+### Important: Response Format Display vs Reality
+
+The M4300 API returns responses that may appear malformed in test output but are actually valid:
+
+```python
+# What you see in test output (appears to have missing commas):
+{
+    "login":    {
+        "token":    "abc123"    
+        "expire":   "86400"     # No comma!
+    }                          # No comma!
+    "resp": {
+        "status":   "success"   # No comma!
+        "respCode": 0           # No comma!
+        "respMsg":  "Operation success"
+    }
+}
+
+# What Python actually sees (valid JSON):
+{
+    "login": {
+        "token": "abc123",
+        "expire": "86400"
+    },
+    "resp": {
+        "status": "success",
+        "respCode": 0,
+        "respMsg": "Operation success"
+    }
+}
+```
+
+### Key Points
+
+1. DO NOT attempt to "fix" missing commas in test output
+   - This is a display artifact only
+   - Python's json parser handles the format correctly
+   - The actual JSON structure is valid
+
+2. Verify using operations, not appearance:
+   ```python
+   # Good - Verify structure and operations
+   response = api_call()
+   assert isinstance(response, dict)
+   assert "resp" in response
+   assert response["resp"]["status"] == "success"
+   
+   # Bad - Don't try to fix format based on how it looks
+   # response_text = response_text.replace("}\n", "},\n")  # DON'T DO THIS
+   ```
+
+3. Trust the verification steps:
+   - If json.loads() succeeds, the JSON is valid
+   - If dict operations work, the structure is correct
+   - If tests pass, don't "fix" display artifacts
+
 ## Implementation
 
 1. Use this document as a checklist for issue investigation

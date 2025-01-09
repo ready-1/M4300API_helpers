@@ -3,10 +3,15 @@
 This module provides functionality to logout from an M4300 switch and
 invalidate the current authentication token.
 
-Note:
-    SSL certificate verification is disabled as M4300 switches use
-    self-signed certificates. This is a known and accepted limitation
-    of the device's firmware.
+Notes:
+    1. SSL certificate verification is disabled as M4300 switches use
+       self-signed certificates. This is a known and accepted limitation
+       of the device's firmware.
+       
+    2. The M4300 API returns JSON responses that may appear to have missing
+       commas in test output. This is a display artifact only - the JSON is
+       valid and parsed correctly. See docs/dev/systematic_verification.md
+       section "M4300 API Response Format" for details.
 """
 import json
 from typing import Dict
@@ -55,7 +60,7 @@ def logout(base_url: str, token: str) -> Dict:
     try:
         # SSL verification disabled for M4300's self-signed certificates
         response = requests.post(
-            url=url,
+            url,
             headers=headers,
             verify=False,  # nosec B501 - M4300 uses self-signed certificates
             timeout=DEFAULT_TIMEOUT
@@ -68,23 +73,25 @@ def logout(base_url: str, token: str) -> Dict:
             
             # Validate response format
             if not isinstance(data, dict):
-                raise RuntimeError(f"API request failed: Invalid response type")
+                raise RuntimeError("Logout failed: Invalid response type")
             
             if "resp" not in data:
-                raise RuntimeError(f"API request failed: Missing response data")
+                raise RuntimeError("Logout failed: Missing response data")
                 
             if "status" not in data["resp"]:
-                raise RuntimeError(f"API request failed: Missing status")
+                raise RuntimeError("Logout failed: Missing status")
                 
             # Check for error response
             if data["resp"]["status"] != "success":
                 msg = data["resp"].get("respMsg", "Unknown error")
-                raise RuntimeError(f"API request failed: {msg}")
+                raise RuntimeError(f"Logout failed: {msg}")
                 
             return data
             
-        except (json.JSONDecodeError, KeyError, TypeError) as e:
-            raise RuntimeError(f"API request failed: Invalid response format - {str(e)}")
+        except json.JSONDecodeError as e:
+            raise RuntimeError(f"Logout failed: Invalid JSON response")
+        except (KeyError, TypeError) as e:
+            raise RuntimeError(f"Logout failed: Invalid response format")
             
     except RequestException as e:
-        raise RuntimeError(f"API request failed: {str(e)}")
+        raise RuntimeError(f"Logout failed: {str(e)}")
