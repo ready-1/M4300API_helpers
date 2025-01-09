@@ -3,6 +3,8 @@ CRITICAL_RULES {
     REQUIRED: Document key decisions
     REQUIRED: Handle errors systematically
     FORBIDDEN: Skip validation steps
+    FORBIDDEN: Make code changes from "???" prompts
+    NON_NEGOTIABLE: Treat "???" prefix as information-only inquiry
 }
 
 WORKFLOW {
@@ -51,13 +53,23 @@ IMPLEMENTATION {
         REQUIRED: One operation at a time
         REQUIRED: Handle errors
         REQUIRED: Log interactions
+        REQUIRED: Restart Cline after changes
+        FORBIDDEN: Run server directly
     }
 }
 
 ENDPOINT_WORKFLOW {
+    ANALYSIS {
+        REQUIRED: Check pyproject.toml first
+        REQUIRED: Review architectural docs
+        REQUIRED: Identify project type
+        REQUIRED: Understand test environment
+        FORBIDDEN: Make assumptions about project structure
+    }
+
     SETUP {
         REQUIRED: Read info doc first
-        REQUIRED: Check project type (Python/TypeScript)
+        REQUIRED: Validate project type
         REQUIRED: Run validate_endpoint.sh
         REQUIRED: Use create_endpoint_helper.sh
         FORBIDDEN: Skip setup steps
@@ -72,26 +84,31 @@ ENDPOINT_WORKFLOW {
     }
 
     TESTING {
-        REQUIRED: Create test file after implementation
-        REQUIRED: Test success cases
-        REQUIRED: Test error cases
+        REQUIRED: Define test plan first
+        REQUIRED: Set coverage requirements
+        REQUIRED: Create unit tests
+        REQUIRED: Add integration tests
         REQUIRED: Mock API responses
         REQUIRED: Verify error handling
+        REQUIRED: Run coverage validation
     }
 
     DOCUMENTATION {
-        REQUIRED: Create README.md
+        REQUIRED: Start with template
         REQUIRED: Include usage examples
         REQUIRED: Document API details
         REQUIRED: List error cases
         REQUIRED: Show test commands
+        REQUIRED: Document known limitations
     }
 
     VALIDATION {
         REQUIRED: Run validate_helper.sh
         REQUIRED: Fix any warnings
         REQUIRED: Test with live API
-        REQUIRED: Update documentation if needed
+        REQUIRED: Update documentation
+        REQUIRED: Verify MCP integration
+        REQUIRED: Restart Cline after changes
     }
 }
 
@@ -140,6 +157,14 @@ TESTING {
     REQUIRED: Validate responses
     REQUIRED: Document test cases
     FORBIDDEN: Skip test steps
+}
+
+MCP_INTEGRATION {
+    REQUIRED: Update Cline config
+    REQUIRED: Restart Cline after changes
+    REQUIRED: Verify tool registration
+    REQUIRED: Test through Cline
+    FORBIDDEN: Run server standalone
 }
 
 DEFERRED {
