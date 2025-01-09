@@ -40,7 +40,23 @@ Example response:
   - respMsg: Human-readable message
 
 ## Error Handling
-All error messages follow the pattern "API request failed: <specific reason>".
+
+Error messages follow two patterns:
+
+1. Network/API Errors:
+   - Format: "API request failed: <specific reason>"
+   - Examples:
+     - "API request failed: Connection error"
+     - "API request failed: Timeout"
+     - "API request failed: Invalid response format"
+
+2. Application Errors:
+   - Format: "Logout failed: <specific reason>"
+   - Examples:
+     - "Logout failed: Invalid token"
+     - "Logout failed: Token expired"
+     - "Logout failed: Invalid JSON response"
+
 Common errors:
 
 1. Invalid Token:
@@ -73,9 +89,9 @@ Common errors:
    - Don't trust visual representation in logs/errors
 
 2. Error Handling:
-   - All errors should start with "API request failed:"
-   - Include specific error details after the prefix
-   - Handle both API errors and network errors
+   - Network errors use "API request failed:" prefix
+   - Application errors use "Logout failed:" prefix
+   - Include specific error details after prefix
 
 3. Validation:
    - Check response is a dictionary
@@ -127,8 +143,8 @@ except RuntimeError as e:
    - Parseable by standard JSON libraries
 
 2. Error Messages:
-   - Must start with "API request failed:"
-   - Include specific error details
+   - Network errors: "API request failed: ..."
+   - Application errors: "Logout failed: ..."
    - Match test expectations
 
 ## Related Documentation
