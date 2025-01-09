@@ -1,0 +1,17 @@
+==== ENDPOINT ====
+POST /api/v1/login
+
+==== PDF DOCUMENTATION ====
+
+
+==== WORKING PYTHON CODE FROM POSTMAN ====
+'''
+
+
+'''
+
+==== ACTUAL LIVE RESPONSE FROM POSTMAN FOR THE ABOVE CODE ====
+Status: HTTP 1.1 200 OK
+'''
+
+'''

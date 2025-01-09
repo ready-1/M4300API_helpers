@@ -54,6 +54,47 @@ IMPLEMENTATION {
     }
 }
 
+ENDPOINT_WORKFLOW {
+    SETUP {
+        REQUIRED: Read info doc first
+        REQUIRED: Check project type (Python/TypeScript)
+        REQUIRED: Run validate_endpoint.sh
+        REQUIRED: Use create_endpoint_helper.sh
+        FORBIDDEN: Skip setup steps
+    }
+
+    IMPLEMENTATION {
+        REQUIRED: Create helper file first
+        REQUIRED: Add error handling
+        REQUIRED: Include type hints
+        REQUIRED: Follow language standards
+        REQUIRED: Document all functions
+    }
+
+    TESTING {
+        REQUIRED: Create test file after implementation
+        REQUIRED: Test success cases
+        REQUIRED: Test error cases
+        REQUIRED: Mock API responses
+        REQUIRED: Verify error handling
+    }
+
+    DOCUMENTATION {
+        REQUIRED: Create README.md
+        REQUIRED: Include usage examples
+        REQUIRED: Document API details
+        REQUIRED: List error cases
+        REQUIRED: Show test commands
+    }
+
+    VALIDATION {
+        REQUIRED: Run validate_helper.sh
+        REQUIRED: Fix any warnings
+        REQUIRED: Test with live API
+        REQUIRED: Update documentation if needed
+    }
+}
+
 ERROR_HANDLING {
     REQUIRED: Stop on new issues
     REQUIRED: Document errors
@@ -74,29 +115,6 @@ DEVELOPMENT {
     REQUIRED: Clear commit messages
     REQUIRED: Complete validation before merge
     REQUIRED: Update documentation
-}
-
-ENDPOINT_WORKFLOW {
-    INFORMATION {
-        REQUIRED: Check Postman examples
-        REQUIRED: Review API docs
-        REQUIRED: Test with live switch
-        REQUIRED: Document findings
-    }
-
-    IMPLEMENTATION {
-        REQUIRED: Follow test plan
-        REQUIRED: Write tests first
-        REQUIRED: Handle errors
-        REQUIRED: Add documentation
-    }
-
-    VERIFICATION {
-        REQUIRED: All tests pass
-        REQUIRED: Live testing works
-        REQUIRED: Documentation complete
-        REQUIRED: Examples provided
-    }
 }
 
 QUALITY {
