@@ -203,3 +203,75 @@ api_helpers/
 └── scripts/         # Development and validation scripts
     ├── validate.sh
     └── run_tests.sh
+
+---
+
+## Endpoint Development Workflow
+
+### Overview
+The development of each endpoint follows a structured workflow that ensures reliability, maintainability, and knowledge preservation.
+
+### Core Components
+
+1. Information Management
+   - Raw endpoint documentation in docs/dev/mcp_info/
+   - MCP server as knowledge base
+   - Python implementation in src/
+   - Test suite validation
+
+2. Development Process
+   ```
+   Input (Documentation)        Process                    Output (Implementation)
+   │                           │                          │
+   ├─ Postman example          │                         ├─ Working helper
+   ├─ PDF documentation    ───>│ Knowledge ──> Code ──> Test ├─ Documentation
+   ├─ Known quirks             │     ▲          │           ├─ Tests
+   ├─ Live testing            │     └──────────┘           ├─ Examples
+                              │    (Learning Loop)          │
+   ```
+
+### Workflow Phases
+
+1. Information Gathering
+   - Store raw documentation in standard format
+   - Document working examples
+   - Note known issues/quirks
+   - Reference PDF sections
+
+2. Knowledge Capture
+   - Parse into MCP server
+   - Track confidence levels
+   - Document discrepancies
+   - Store working examples
+
+3. Implementation
+   - Generate Python code
+   - Add type hints
+   - Write tests
+   - Handle edge cases
+
+4. Verification
+   - Test against live switch
+   - Update documentation
+   - Record findings
+   - Commit changes
+
+### Quality Standards
+
+1. Documentation
+   - Standard format in mcp_info/
+   - Clear confidence levels
+   - Known issues documented
+   - Examples preserved
+
+2. Implementation
+   - Type safety
+   - Error handling
+   - Test coverage
+   - Edge cases
+
+3. Verification
+   - Live switch testing
+   - Cross-firmware checks
+   - Integration tests
+   - Example validation
