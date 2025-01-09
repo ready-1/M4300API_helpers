@@ -16,7 +16,7 @@ if ! git checkout -b "$BRANCH_NAME"; then
 fi
 
 # Copy template
-if ! cp /Users/bob/dev/m4300api_helpers/docs/dev/mcp_info/endpoint_doc_template.txt "info_doc_$1.txt"; then
+if ! cp /Users/bob/dev/m4300api_helpers/docs/dev/mcp_info/endpoint_doc_template.txt "/Users/bob/dev/m4300api_helpers/docs/dev/mcp_info/info_doc_$1.txt"; then
     echo "Error: Failed to copy template"
     exit 1
 fi
