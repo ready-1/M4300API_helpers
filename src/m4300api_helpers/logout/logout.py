@@ -14,14 +14,24 @@ Notes:
        section "M4300 API Response Format" for details.
 """
 import json
-from typing import Dict
+from typing import TypedDict, Literal
 import requests
 from requests.exceptions import RequestException
+
+class ResponseData(TypedDict):
+    status: Literal["success", "failure"]
+    respCode: int
+    respMsg: str
+
+class LogoutResult(TypedDict):
+    logout: dict[str, None]  # Empty object for future use
+    resp: ResponseData
+
 
 # Default timeout for API requests (in seconds)
 DEFAULT_TIMEOUT = 10
 
-def logout(base_url: str, token: str) -> Dict:
+def logout(base_url: str, token: str) -> LogoutResult:
     """Logout from M4300 switch and invalidate authentication token.
     
     Args:
@@ -86,7 +96,15 @@ def logout(base_url: str, token: str) -> Dict:
                 msg = data["resp"].get("respMsg", "Unknown error")
                 raise RuntimeError(f"Logout failed: {msg}")
                 
-            return data
+            # Cast response to correct type
+            return LogoutResult(
+                logout=dict(),  # Empty object as specified in API
+                resp=dict(
+                    status=data["resp"]["status"],
+                    respCode=data["resp"]["respCode"],
+                    respMsg=data["resp"]["respMsg"]
+                )
+            )
             
         except json.JSONDecodeError as e:
             raise RuntimeError(f"Logout failed: Invalid JSON response")

@@ -9,14 +9,27 @@ Note:
     of the device's firmware.
 """
 import json
-from typing import Dict
+from typing import TypedDict, Literal
 import requests
 from requests.exceptions import RequestException
+
+class LoginResponse(TypedDict):
+    token: str
+    expire: str
+
+class ResponseData(TypedDict):
+    status: Literal["success", "failure"]
+    respCode: int
+    respMsg: str
+
+class LoginResult(TypedDict):
+    login: LoginResponse
+    resp: ResponseData
 
 # Default timeout for API requests (in seconds)
 DEFAULT_TIMEOUT = 10
 
-def login(base_url: str, username: str, password: str) -> Dict:
+def login(base_url: str, username: str, password: str) -> LoginResult:
     """Login to M4300 switch and obtain authentication token.
     
     Args:
@@ -87,7 +100,15 @@ def login(base_url: str, username: str, password: str) -> Dict:
             msg = data["resp"].get("respMsg", "Unknown error")
             raise RuntimeError(f"Login failed: {msg}")
             
-        return data
+        # Cast response to correct type
+        return LoginResult(
+            login=dict(token=data["login"]["token"], expire=data["login"]["expire"]),
+            resp=dict(
+                status=data["resp"]["status"],
+                respCode=data["resp"]["respCode"],
+                respMsg=data["resp"]["respMsg"]
+            )
+        )
         
     except json.JSONDecodeError:
         raise RuntimeError("Login failed: Invalid JSON response")
