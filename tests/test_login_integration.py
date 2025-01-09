@@ -5,8 +5,7 @@ functionality against a live M4300 switch. These tests require access
 to the test switch and valid credentials.
 
 Test Environment:
-    - Switch: 192.168.99.92:8443
-    - Credentials: admin/password123
+    - Switch configuration from environment variables
     - Rate limiting: 5 attempts per 5 minutes
 
 Test Categories:
@@ -19,17 +18,10 @@ Note: These tests require the --run-integration flag:
     python -m pytest tests/test_login_integration.py -v --run-integration
 """
 import pytest
-from src.login.login import login
-
-# Test switch configuration
-TEST_SWITCH = {
-    "base_url": "https://192.168.99.92:8443",
-    "username": "admin",
-    "password": "password123"
-}
+from m4300api_helpers.login.login import login
 
 @pytest.mark.integration
-def test_live_login_success():
+def test_live_login_success(switch_config):
     """Test successful login with valid credentials on live switch.
     
     Verifies:
@@ -40,9 +32,9 @@ def test_live_login_success():
         - Token expiration
     """
     result = login(
-        TEST_SWITCH["base_url"],
-        TEST_SWITCH["username"],
-        TEST_SWITCH["password"]
+        switch_config["base_url"],
+        switch_config["username"],
+        switch_config["password"]
     )
     
     # Verify response structure
@@ -61,7 +53,7 @@ def test_live_login_success():
     assert result["login"]["expire"] == "86400"
 
 @pytest.mark.integration
-def test_live_login_invalid_password():
+def test_live_login_invalid_password(switch_config):
     """Test login failure with invalid password on live switch.
     
     Verifies:
@@ -71,13 +63,13 @@ def test_live_login_invalid_password():
     """
     with pytest.raises(RuntimeError, match="Login failed:"):
         login(
-            TEST_SWITCH["base_url"],
-            TEST_SWITCH["username"],
+            switch_config["base_url"],
+            switch_config["username"],
             "wrong_password"
         )
 
 @pytest.mark.integration
-def test_live_login_invalid_username():
+def test_live_login_invalid_username(switch_config):
     """Test login failure with invalid username on live switch.
     
     Verifies:
@@ -88,13 +80,13 @@ def test_live_login_invalid_username():
     """
     with pytest.raises(RuntimeError, match="Login failed:"):
         login(
-            TEST_SWITCH["base_url"],
+            switch_config["base_url"],
             "invalid_user",
-            TEST_SWITCH["password"]
+            switch_config["password"]
         )
 
 @pytest.mark.integration
-def test_live_login_invalid_url():
+def test_live_login_invalid_url(switch_config):
     """Test connection failure with invalid URL.
     
     Verifies:
@@ -102,9 +94,11 @@ def test_live_login_invalid_url():
         - Connection timeout
         - Error message format
     """
+    # Modify port to create invalid URL
+    base_url = switch_config["base_url"].replace(":8443", ":9999")
     with pytest.raises(RuntimeError, match="API request failed:"):
         login(
-            "https://192.168.99.92:9999",
-            TEST_SWITCH["username"],
-            TEST_SWITCH["password"]
+            base_url,
+            switch_config["username"],
+            switch_config["password"]
         )

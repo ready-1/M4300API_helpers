@@ -5,8 +5,7 @@ functionality against a live M4300 switch. These tests require access
 to the test switch and valid credentials.
 
 Test Environment:
-    - Switch: 192.168.99.92:8443
-    - Credentials: admin/password123
+    - Switch configuration from environment variables
     - Rate limiting: 5 attempts per 5 minutes
 
 Test Categories:
@@ -19,28 +18,24 @@ Note: These tests require the --run-integration flag:
     python -m pytest tests/test_logout_integration.py -v --run-integration
 """
 import pytest
-from src.login.login import login
-from src.logout.logout import logout
-
-# Test switch configuration
-TEST_SWITCH = {
-    "base_url": "https://192.168.99.92:8443",
-    "username": "admin",
-    "password": "password123"
-}
+from m4300api_helpers.login.login import login
+from m4300api_helpers.logout.logout import logout
 
 @pytest.fixture
-def auth_token():
+def auth_token(switch_config):
     """Fixture to get valid auth token for testing."""
+    print(f"\nswitch_config type: {type(switch_config)}")
+    print(f"switch_config keys: {switch_config.keys()}")
+    print(f"switch_config: {switch_config}")
     result = login(
-        TEST_SWITCH["base_url"],
-        TEST_SWITCH["username"],
-        TEST_SWITCH["password"]
+        switch_config["base_url"],
+        switch_config["username"],
+        switch_config["password"]
     )
     return result["login"]["token"]
 
 @pytest.mark.integration
-def test_live_logout_success(auth_token):
+def test_live_logout_success(auth_token, switch_config):
     """Test successful logout with valid token on live switch.
     
     Verifies:
@@ -50,7 +45,7 @@ def test_live_logout_success(auth_token):
         - Token invalidation
     """
     result = logout(
-        TEST_SWITCH["base_url"],
+        switch_config["base_url"],
         auth_token
     )
     
@@ -61,11 +56,11 @@ def test_live_logout_success(auth_token):
     assert result["resp"]["respCode"] == 0
     
     # Verify token is invalidated by attempting reuse
-    with pytest.raises(RuntimeError, match="Logout failed:"):
-        logout(TEST_SWITCH["base_url"], auth_token)
+    with pytest.raises(RuntimeError, match="API request failed:"):
+        logout(switch_config["base_url"], auth_token)
 
 @pytest.mark.integration
-def test_live_logout_invalid_token():
+def test_live_logout_invalid_token(switch_config):
     """Test logout failure with invalid token on live switch.
     
     Verifies:
@@ -73,14 +68,14 @@ def test_live_logout_invalid_token():
         - Error message format
         - RuntimeError exception
     """
-    with pytest.raises(RuntimeError, match="Logout failed:"):
+    with pytest.raises(RuntimeError, match="API request failed:"):
         logout(
-            TEST_SWITCH["base_url"],
+            switch_config["base_url"],
             "invalid_token_123"
         )
 
 @pytest.mark.integration
-def test_live_logout_expired_token(auth_token):
+def test_live_logout_expired_token(auth_token, switch_config):
     """Test logout with already logged out token.
     
     Verifies:
@@ -89,14 +84,14 @@ def test_live_logout_expired_token(auth_token):
         - RuntimeError exception
     """
     # First logout to invalidate token
-    logout(TEST_SWITCH["base_url"], auth_token)
+    logout(switch_config["base_url"], auth_token)
     
     # Attempt to reuse invalidated token
-    with pytest.raises(RuntimeError, match="Logout failed:"):
-        logout(TEST_SWITCH["base_url"], auth_token)
+    with pytest.raises(RuntimeError, match="API request failed:"):
+        logout(switch_config["base_url"], auth_token)
 
 @pytest.mark.integration
-def test_live_logout_invalid_url(auth_token):
+def test_live_logout_invalid_url(auth_token, switch_config):
     """Test connection failure with invalid URL.
     
     Verifies:
@@ -104,8 +99,7 @@ def test_live_logout_invalid_url(auth_token):
         - Connection timeout
         - Error message format
     """
+    # Modify port to create invalid URL
+    base_url = switch_config["base_url"].replace(":8443", ":9999")
     with pytest.raises(RuntimeError, match="API request failed:"):
-        logout(
-            "https://192.168.99.92:9999",
-            auth_token
-        )
+        logout(base_url, auth_token)

@@ -49,6 +49,65 @@ The development process will be supported by a local MCP server to reduce Anthro
 
 ---
 
+## Testing Strategy
+
+### Systematic Verification Method
+
+The project uses a systematic verification approach for diagnosing issues and preventing cascading failures. This method is documented in detail in [systematic_verification.md](systematic_verification.md) and consists of:
+
+1. **Structure Verification**
+   - Verify data structures before behavior
+   - Use Python's type system
+   - Validate actual operations
+
+2. **Behavior Verification**
+   - Test operations before display
+   - Verify serialization
+   - Check actual functionality
+
+3. **Function Verification**
+   - Test actual function behavior
+   - Verify return types
+   - Check expected states
+
+4. **Error Handling**
+   - Verify error conditions
+   - Test error messages
+   - Validate error types
+
+5. **External System Verification**
+   - Test raw API responses
+   - Verify network behavior
+   - Check system integration
+
+This approach prevents:
+- Cascading failures from incorrect assumptions
+- Fixes based on display artifacts
+- Unnecessary code changes
+
+### Testing Levels
+
+1. **Unit Tests**
+   - Both online and offline tests
+   - Real switch integration tests (192.168.99.92)
+   - Port 50 available for cable tests
+   - Separate test flags for integration tests
+   - Automated validation workflow
+
+2. **Integration Tests**
+   - Live switch testing
+   - Cross-firmware checks
+   - System integration
+   - Example validation
+
+3. **Validation Tests**
+   - Input validation
+   - Response validation
+   - Error handling
+   - Edge cases
+
+---
+
 ## Endpoint Implementation Structure
 
 Each API endpoint implementation follows a standardized structure:

@@ -1,0 +1,138 @@
+# M4300 Logout Endpoint Documentation
+
+## Overview
+Endpoint for logging out and invalidating authentication tokens.
+
+## API Details
+- URL: /api/v1/logout
+- Method: POST
+- Authentication: Bearer token
+
+## Request Format
+Headers:
+```
+Accept: application/json
+Authorization: Bearer <token>
+```
+
+## Response Format
+NOTE: The API returns tab-indented JSON without commas. This is a known characteristic
+of the M4300 API and should not be treated as a format error.
+
+Example response:
+```json
+{
+    "logout":    {
+    }
+    "resp": {
+        "status":    "success"
+        "respCode":  0
+        "respMsg":   "Operation success"
+    }
+}
+```
+
+## Response Fields
+- logout: Empty object (placeholder for future use)
+- resp:
+  - status: "success" or "failure"
+  - respCode: Integer response code
+  - respMsg: Human-readable message
+
+## Error Handling
+All error messages follow the pattern "API request failed: <specific reason>".
+Common errors:
+
+1. Invalid Token:
+   ```json
+   {
+       "resp": {
+           "status": "failure"
+           "respCode": 1
+           "respMsg": "Invalid token"
+       }
+   }
+   ```
+
+2. Expired Token:
+   ```json
+   {
+       "resp": {
+           "status": "failure"
+           "respCode": 1
+           "respMsg": "Token expired"
+       }
+   }
+   ```
+
+## Implementation Notes
+
+1. Response Parsing:
+   - The API uses tabs and newlines instead of commas
+   - Standard JSON parsers handle this format correctly
+   - Don't trust visual representation in logs/errors
+
+2. Error Handling:
+   - All errors should start with "API request failed:"
+   - Include specific error details after the prefix
+   - Handle both API errors and network errors
+
+3. Validation:
+   - Check response is a dictionary
+   - Verify "resp" field exists
+   - Validate "status" field presence
+   - Check status value for success/failure
+
+4. Display Artifacts:
+   - Error messages may show missing commas
+   - This is a display issue, not a data issue
+   - Use systematic verification to validate actual data
+
+## Testing Guidelines
+
+1. Success Cases:
+   - Valid token logout
+   - Response structure validation
+   - Success status verification
+
+2. Error Cases:
+   - Invalid token
+   - Expired token
+   - Network errors
+   - Malformed responses
+
+3. Verification Steps:
+   - Verify data structures before behavior
+   - Test operations before display
+   - Check raw API responses
+   - Validate error messages
+
+## Example Usage
+
+```python
+from m4300api_helpers.logout import logout
+
+try:
+    result = logout(base_url="https://192.168.99.92:8443", token="valid_token")
+    print(f"Logout successful: {result['resp']['status']}")
+except RuntimeError as e:
+    print(f"Logout failed: {e}")
+```
+
+## Known Issues
+1. API Response Format:
+   - Uses tabs for indentation
+   - Omits commas between fields
+   - May appear malformed in logs
+   - Parseable by standard JSON libraries
+
+2. Error Messages:
+   - Must start with "API request failed:"
+   - Include specific error details
+   - Match test expectations
+
+## Related Documentation
+- Authentication Flow
+- Token Management
+- Error Handling Guidelines
+- Systematic Verification Method

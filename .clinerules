@@ -34,6 +34,43 @@ WORKFLOW {
     }
 }
 
+VERIFICATION {
+    STRUCTURE {
+        REQUIRED: Verify data structures first
+        REQUIRED: Use type system checks
+        REQUIRED: Test actual operations
+        FORBIDDEN: Trust display output
+    }
+
+    BEHAVIOR {
+        REQUIRED: Test operations before display
+        REQUIRED: Verify actual functionality
+        REQUIRED: Check data access
+        FORBIDDEN: Assume display matches reality
+    }
+
+    FUNCTION {
+        REQUIRED: Test actual behavior
+        REQUIRED: Verify return types
+        REQUIRED: Check state changes
+        FORBIDDEN: Trust error messages
+    }
+
+    ERROR_HANDLING {
+        REQUIRED: Test error conditions
+        REQUIRED: Verify error types
+        REQUIRED: Check error messages
+        FORBIDDEN: Make changes based on display
+    }
+
+    EXTERNAL {
+        REQUIRED: Test raw responses
+        REQUIRED: Verify network behavior
+        REQUIRED: Check integration
+        FORBIDDEN: Trust formatted output
+    }
+}
+
 IMPLEMENTATION {
     VALIDATION {
         REQUIRED: Run validate_endpoint.sh first

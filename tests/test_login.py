@@ -15,9 +15,9 @@ import json
 import pytest
 import requests
 from requests.exceptions import RequestException
-from src.login.login import login
+from m4300api_helpers.login.login import login, DEFAULT_TIMEOUT
 
-def test_successful_login(mocker):
+def test_successful_login(mocker, switch_config):
     """Test successful login with mocked response.
     
     Verifies:
@@ -42,25 +42,26 @@ def test_successful_login(mocker):
     mock_post.return_value.json.return_value = mock_response
     mock_post.return_value.raise_for_status.return_value = None
     
-    result = login("https://192.168.99.92:8443", "admin", "password123")
+    result = login(switch_config["base_url"], switch_config["username"], switch_config["password"])
     
     assert result == mock_response
     mock_post.assert_called_once_with(
-        "https://192.168.99.92:8443/api/v1/login",
+        f"{switch_config['base_url']}/api/v1/login",
         headers={
             "Content-Type": "application/json",
             "Accept": "application/json"
         },
         data=json.dumps({
             "login": {
-                "username": "admin",
-                "password": "password123"
+                "username": switch_config["username"],
+                "password": switch_config["password"]
             }
         }),
-        verify=False
+        verify=False,
+        timeout=DEFAULT_TIMEOUT
     )
 
-def test_missing_base_url():
+def test_missing_base_url(switch_config):
     """Test error handling for missing base URL.
     
     Verifies:
@@ -69,9 +70,9 @@ def test_missing_base_url():
         - ValueError exception
     """
     with pytest.raises(ValueError, match="base_url is required"):
-        login("", "admin", "password123")
+        login("", switch_config["username"], switch_config["password"])
 
-def test_missing_username():
+def test_missing_username(switch_config):
     """Test error handling for missing username.
     
     Verifies:
@@ -80,9 +81,9 @@ def test_missing_username():
         - ValueError exception
     """
     with pytest.raises(ValueError, match="username is required"):
-        login("https://192.168.99.92:8443", "", "password123")
+        login(switch_config["base_url"], "", switch_config["password"])
 
-def test_missing_password():
+def test_missing_password(switch_config):
     """Test error handling for missing password.
     
     Verifies:
@@ -91,9 +92,9 @@ def test_missing_password():
         - ValueError exception
     """
     with pytest.raises(ValueError, match="password is required"):
-        login("https://192.168.99.92:8443", "admin", "")
+        login(switch_config["base_url"], switch_config["username"], "")
 
-def test_failed_login(mocker):
+def test_failed_login(mocker, switch_config):
     """Test handling of failed login attempt.
     
     Verifies:
@@ -118,9 +119,9 @@ def test_failed_login(mocker):
     mock_post.return_value.raise_for_status.return_value = None
     
     with pytest.raises(RuntimeError, match="Login failed: Invalid credentials"):
-        login("https://192.168.99.92:8443", "admin", "wrong_password")
+        login(switch_config["base_url"], switch_config["username"], "wrong_password")
 
-def test_invalid_response_format(mocker):
+def test_invalid_response_format(mocker, switch_config):
     """Test handling of invalid response format.
     
     Verifies:
@@ -129,13 +130,13 @@ def test_invalid_response_format(mocker):
         - RuntimeError exception
     """
     mock_post = mocker.patch('requests.post')
-    mock_post.return_value.json.return_value = {"login": {}, "resp": {}}
+    mock_post.return_value.json.return_value = {"resp": {}}  # Missing login object
     mock_post.return_value.raise_for_status.return_value = None
     
     with pytest.raises(RuntimeError, match="Invalid response format"):
-        login("https://192.168.99.92:8443", "admin", "password123")
+        login(switch_config["base_url"], switch_config["username"], switch_config["password"])
 
-def test_request_exception(mocker):
+def test_request_exception(mocker, switch_config):
     """Test handling of request exception.
     
     Verifies:
@@ -147,9 +148,9 @@ def test_request_exception(mocker):
     mock_post.side_effect = RequestException("Connection error")
     
     with pytest.raises(RuntimeError, match="API request failed: Connection error"):
-        login("https://192.168.99.92:8443", "admin", "password123")
+        login(switch_config["base_url"], switch_config["username"], switch_config["password"])
 
-def test_invalid_json_response(mocker):
+def test_invalid_json_response(mocker, switch_config):
     """Test handling of invalid JSON response.
     
     Verifies:
@@ -163,4 +164,4 @@ def test_invalid_json_response(mocker):
     mock_post.return_value.raise_for_status.return_value = None
     
     with pytest.raises(RuntimeError, match="Login failed: Invalid JSON response"):
-        login("https://192.168.99.92:8443", "admin", "password123")
+        login(switch_config["base_url"], switch_config["username"], switch_config["password"])

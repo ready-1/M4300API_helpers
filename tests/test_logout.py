@@ -15,9 +15,14 @@ import json
 import pytest
 import requests
 from requests.exceptions import RequestException
-from src.logout.logout import logout
+from m4300api_helpers.logout.logout import logout, DEFAULT_TIMEOUT
 
-def test_successful_logout(mocker):
+@pytest.fixture
+def test_token():
+    """Fixture providing a test token for logout tests."""
+    return "8c523ad44e0a8f46324aa71f371963e07211b04b7239519a6f60f1ee5939dcc0"
+
+def test_successful_logout(mocker, switch_config, test_token):
     """Test successful logout with mocked response.
     
     Verifies:
@@ -39,22 +44,20 @@ def test_successful_logout(mocker):
     mock_post.return_value.json.return_value = mock_response
     mock_post.return_value.raise_for_status.return_value = None
     
-    result = logout(
-        "https://192.168.99.92:8443",
-        "a11cd17543520ace80d7c7b45aba43357b4d0844995879364aa4d47b2671fe2e"
-    )
+    result = logout(switch_config["base_url"], test_token)
     
     assert result == mock_response
     mock_post.assert_called_once_with(
-        "https://192.168.99.92:8443/api/v1/logout",
+        f"{switch_config['base_url']}/api/v1/logout",
         headers={
             "Accept": "application/json",
-            "Authorization": "Bearer a11cd17543520ace80d7c7b45aba43357b4d0844995879364aa4d47b2671fe2e"
+            "Authorization": f"Bearer {test_token}"
         },
-        verify=False
+        verify=False,
+        timeout=DEFAULT_TIMEOUT
     )
 
-def test_missing_base_url():
+def test_missing_base_url(test_token):
     """Test error handling for missing base URL.
     
     Verifies:
@@ -63,9 +66,9 @@ def test_missing_base_url():
         - ValueError exception
     """
     with pytest.raises(ValueError, match="base_url is required"):
-        logout("", "valid_token")
+        logout("", test_token)
 
-def test_missing_token():
+def test_missing_token(switch_config):
     """Test error handling for missing token.
     
     Verifies:
@@ -74,9 +77,9 @@ def test_missing_token():
         - ValueError exception
     """
     with pytest.raises(ValueError, match="token is required"):
-        logout("https://192.168.99.92:8443", "")
+        logout(switch_config["base_url"], "")
 
-def test_failed_logout(mocker):
+def test_failed_logout(mocker, switch_config, test_token):
     """Test handling of failed logout attempt.
     
     Verifies:
@@ -98,9 +101,9 @@ def test_failed_logout(mocker):
     mock_post.return_value.raise_for_status.return_value = None
     
     with pytest.raises(RuntimeError, match="Logout failed: Invalid token"):
-        logout("https://192.168.99.92:8443", "invalid_token")
+        logout(switch_config["base_url"], "invalid_token")
 
-def test_invalid_response_format(mocker):
+def test_invalid_response_format(mocker, switch_config, test_token):
     """Test handling of invalid response format.
     
     Verifies:
@@ -113,9 +116,9 @@ def test_invalid_response_format(mocker):
     mock_post.return_value.raise_for_status.return_value = None
     
     with pytest.raises(RuntimeError, match="Invalid response format"):
-        logout("https://192.168.99.92:8443", "valid_token")
+        logout(switch_config["base_url"], test_token)
 
-def test_request_exception(mocker):
+def test_request_exception(mocker, switch_config, test_token):
     """Test handling of request exception.
     
     Verifies:
@@ -127,9 +130,9 @@ def test_request_exception(mocker):
     mock_post.side_effect = RequestException("Connection error")
     
     with pytest.raises(RuntimeError, match="API request failed: Connection error"):
-        logout("https://192.168.99.92:8443", "valid_token")
+        logout(switch_config["base_url"], test_token)
 
-def test_invalid_json_response(mocker):
+def test_invalid_json_response(mocker, switch_config, test_token):
     """Test handling of invalid JSON response.
     
     Verifies:
@@ -143,4 +146,4 @@ def test_invalid_json_response(mocker):
     mock_post.return_value.raise_for_status.return_value = None
     
     with pytest.raises(RuntimeError, match="Logout failed: Invalid JSON response"):
-        logout("https://192.168.99.92:8443", "valid_token")
+        logout(switch_config["base_url"], test_token)
