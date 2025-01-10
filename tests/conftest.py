@@ -1,94 +1,89 @@
-"""Pytest configuration and fixtures for M4300 API helper tests.
+"""Test configuration and fixtures."""
 
-This module provides common test configuration and fixtures used across
-both unit and integration tests for the M4300 API helpers.
-
-Configuration:
-    - SSL warning suppression for cleaner test output
-    - Common test data and configurations
-    - Integration test markers and skipping
-
-Test Environment:
-    Configuration via environment variables:
-    - M4300_TEST_HOST: Test switch hostname/IP and port
-    - M4300_TEST_USERNAME: Admin username
-    - M4300_TEST_PASSWORD: Admin password
-    
-    Defaults (backward compatibility):
-    - Host: 192.168.99.92:8443
-    - Username: admin
-    - Password: password123
-    
-    Rate limiting: 5 attempts per 5 minutes
-"""
-import urllib3
 import pytest
-import os
-from typing import Dict
 
-@pytest.fixture(autouse=True)
-def disable_insecure_warnings():
-    """Disable InsecureRequestWarning for all tests.
-    
-    The M4300 switch uses self-signed certificates, so we disable
-    SSL verification warnings to keep test output clean.
-    """
-    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-    yield
-
-def get_test_config() -> Dict[str, str]:
-    """Get test configuration from environment variables.
-    
-    Returns:
-        Dictionary with test configuration using environment variables
-        or default values for backward compatibility.
-        
-    Note:
-        Prefer environment variables over defaults:
-        - M4300_TEST_HOST
-        - M4300_TEST_USERNAME
-        - M4300_TEST_PASSWORD
-    """
-    host = os.getenv('M4300_TEST_HOST', '192.168.99.92:8443')
-    if not host.startswith('https://'):
-        host = f'https://{host}'
-        
-    return {
-        'base_url': host,
-        'username': os.getenv('M4300_TEST_USERNAME', 'admin'),
-        'password': os.getenv('M4300_TEST_PASSWORD', 'password123')
-    }
 
 @pytest.fixture
 def switch_config():
-    """Provide test switch configuration for integration tests.
+    """Test switch configuration.
     
     Returns:
-        Dictionary with test configuration from environment
-        variables or default fallback values.
+        Dictionary containing test switch configuration:
+        {
+            "base_url": str,  # Base URL of test switch
+            "username": str,  # Admin username
+            "password": str   # Admin password
+        }
     """
-    return get_test_config()
+    return {
+        "base_url": "https://192.168.99.92:8443",
+        "username": "admin",
+        "password": "password123"
+    }
 
-def pytest_configure(config):
-    """Add custom markers for test categorization."""
-    config.addinivalue_line(
-        "markers",
-        "integration: mark test as requiring live switch access"
-    )
 
-def pytest_collection_modifyitems(config, items):
-    """Skip integration tests unless explicitly requested."""
-    if not config.getoption("--run-integration"):
-        skip_integration = pytest.mark.skip(reason="need --run-integration option to run")
-        for item in items:
-            if "integration" in item.keywords:
-                item.add_marker(skip_integration)
+@pytest.fixture
+def test_token():
+    """Test authentication token.
+    
+    Returns:
+        String containing test authentication token
+    """
+    return "8c523ad44e0a8f46324aa71f371963e07211b04b7239519a6f60f1ee5939dcc0"
 
-def pytest_addoption(parser):
-    """Add command line options for test configuration."""
-    parser.addoption(
-        "--run-integration",
-        action="store_true",
-        default=False,
-        help="run integration tests against live switch"
-    )
+
+@pytest.fixture
+def mock_success_response():
+    """Mock successful device info response.
+    
+    Returns:
+        Dictionary containing mock device info response
+    """
+    return {
+        "deviceInfo": {
+            "serialNumber": "123456789",
+            "macAddr": "BC:A5:11:A0:7E:1D",
+            "model": "M4300-96X",
+            "swVer": "12.0.4.4",
+            "numOfPorts": 96,
+            "numOfActivePorts": 48,
+            "memoryUsage": "90.58%",
+            "cpuUsage": "17.53%",
+            "fanState": [
+                {
+                    "FAN-1": "Operational",
+                    "FAN-2": "Operational"
+                }
+            ],
+            "poeState": True,
+            "upTime": "00 Days 01 Hrs 07 Mins 11 Secs",
+            "temperatureSensors": [
+                {
+                    "sensorNum": 1,
+                    "sensorDesc": "MAC-A",
+                    "sensorTemp": 45,
+                    "sensorState": 1
+                },
+                {
+                    "sensorNum": 2,
+                    "sensorDesc": "MAC-B",
+                    "sensorTemp": 48,
+                    "sensorState": 1
+                },
+                {
+                    "sensorNum": 3,
+                    "sensorDesc": "System",
+                    "sensorTemp": 42,
+                    "sensorState": 1
+                }
+            ],
+            "bootVersion": "B1.0.0.17",
+            "rxData": 123456789,
+            "txData": 987654321
+        },
+        "resp": {
+            "status": "success",
+            "respCode": 0,
+            "respMsg": "Operation success"
+        }
+    }

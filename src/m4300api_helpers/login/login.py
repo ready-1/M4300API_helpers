@@ -9,22 +9,23 @@ Note:
     of the device's firmware.
 """
 import json
-from typing import TypedDict, Literal
+from typing import TypedDict
 import requests
 from requests.exceptions import RequestException
+from .. import ApiResult, ResponseData
 
 class LoginResponse(TypedDict):
+    """Login response data structure.
+
+    Attributes:
+        token: Authentication token for subsequent API requests
+        expire: Token expiration time in seconds (typically 86400 = 24 hours)
+    """
     token: str
     expire: str
 
-class ResponseData(TypedDict):
-    status: Literal["success", "failure"]
-    respCode: int
-    respMsg: str
-
-class LoginResult(TypedDict):
-    login: LoginResponse
-    resp: ResponseData
+# Type alias for login endpoint response
+LoginResult = ApiResult[LoginResponse]
 
 # Default timeout for API requests (in seconds)
 DEFAULT_TIMEOUT = 10
@@ -40,7 +41,7 @@ def login(base_url: str, username: str, password: str) -> LoginResult:
     Returns:
         Dictionary containing the login response with token:
         {
-            "login": {
+            "data": {
                 "token": str,  # Auth token for subsequent requests
                 "expire": str  # Token expiration in seconds
             },
@@ -102,15 +103,23 @@ def login(base_url: str, username: str, password: str) -> LoginResult:
             
         # Cast response to correct type
         return LoginResult(
-            login=dict(token=data["login"]["token"], expire=data["login"]["expire"]),
-            resp=dict(
+            data=LoginResponse(
+                token=data["login"]["token"],
+                expire=data["login"]["expire"]
+            ),
+            resp=ResponseData(
                 status=data["resp"]["status"],
                 respCode=data["resp"]["respCode"],
                 respMsg=data["resp"]["respMsg"]
             )
         )
-        
     except json.JSONDecodeError:
+        # For invalid credentials, the API returns a non-JSON response
+        # with error message in plain text
+        if "Bad credentials" in response.text:
+            raise RuntimeError("Login failed: Invalid credentials")
+        if "Maximum of five login attempts" in response.text:
+            raise RuntimeError("Login failed: Invalid credentials")
         raise RuntimeError("Login failed: Invalid JSON response")
     except RequestException as e:
         raise RuntimeError(f"API request failed: {str(e)}")

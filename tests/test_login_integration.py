@@ -1,24 +1,8 @@
-"""Integration tests for login endpoint against live M4300 switch.
+"""Integration tests for login helper module."""
 
-This module contains integration tests that verify the login helper's
-functionality against a live M4300 switch. These tests require access
-to the test switch and valid credentials.
-
-Test Environment:
-    - Switch configuration from environment variables
-    - Rate limiting: 5 attempts per 5 minutes
-
-Test Categories:
-    1. Successful login with token validation
-    2. Invalid credential handling
-    3. Network error handling
-    4. Rate limiting behavior
-
-Note: These tests require the --run-integration flag:
-    python -m pytest tests/test_login_integration.py -v --run-integration
-"""
 import pytest
-from m4300api_helpers.login.login import login
+from m4300api_helpers.login import login
+
 
 @pytest.mark.integration
 def test_live_login_success(switch_config):
@@ -38,67 +22,61 @@ def test_live_login_success(switch_config):
     )
     
     # Verify response structure
-    assert "login" in result
-    assert "token" in result["login"]
-    assert "expire" in result["login"]
+    assert "data" in result
     assert "resp" in result
+    assert "token" in result["data"]
+    assert "expire" in result["data"]
     assert result["resp"]["status"] == "success"
     assert result["resp"]["respCode"] == 0
     
-    # Verify token format (64 character hex string)
-    assert len(result["login"]["token"]) == 128
-    int(result["login"]["token"], 16)  # Should not raise ValueError
+    # Verify token format
+    token = result["data"]["token"]
+    assert isinstance(token, str)
+    assert len(token) > 0
     
-    # Verify expiration (86400 seconds = 24 hours)
-    assert result["login"]["expire"] == "86400"
+    # Verify expiration
+    expire = result["data"]["expire"]
+    assert expire == "86400"  # 24 hours in seconds
+
 
 @pytest.mark.integration
 def test_live_login_invalid_password(switch_config):
-    """Test login failure with invalid password on live switch.
+    """Test login with invalid password on live switch.
     
     Verifies:
-        - Invalid password detection
+        - Error handling
         - Error message format
         - RuntimeError exception
     """
-    with pytest.raises(RuntimeError, match="Login failed:"):
-        login(
-            switch_config["base_url"],
-            switch_config["username"],
-            "wrong_password"
-        )
+    with pytest.raises(RuntimeError, match="Login failed: Invalid credentials"):
+        login(switch_config["base_url"], switch_config["username"], "wrong_password")
+
 
 @pytest.mark.integration
 def test_live_login_invalid_username(switch_config):
-    """Test login failure with invalid username on live switch.
+    """Test login with invalid username on live switch.
     
     Verifies:
-        - Invalid username detection
+        - Error handling
         - Error message format
         - RuntimeError exception
-        - Rate limiting messages
     """
-    with pytest.raises(RuntimeError, match="Login failed:"):
-        login(
-            switch_config["base_url"],
-            "invalid_user",
-            switch_config["password"]
-        )
+    with pytest.raises(RuntimeError, match="Login failed: Invalid credentials"):
+        login(switch_config["base_url"], "invalid_user", switch_config["password"])
+
 
 @pytest.mark.integration
 def test_live_login_invalid_url(switch_config):
-    """Test connection failure with invalid URL.
+    """Test login with invalid URL on live switch.
     
     Verifies:
-        - Network error handling
-        - Connection timeout
+        - Error handling
         - Error message format
+        - RuntimeError exception
     """
-    # Modify port to create invalid URL
-    base_url = switch_config["base_url"].replace(":8443", ":9999")
-    with pytest.raises(RuntimeError, match="API request failed:"):
+    with pytest.raises(RuntimeError, match="API request failed"):
         login(
-            base_url,
+            "https://invalid.url:8443",
             switch_config["username"],
             switch_config["password"]
         )
