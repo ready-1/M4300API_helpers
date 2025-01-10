@@ -1,25 +1,9 @@
-"""Integration tests for logout endpoint against live M4300 switch.
+"""Integration tests for logout helper module."""
 
-This module contains integration tests that verify the logout helper's
-functionality against a live M4300 switch. These tests require access
-to the test switch and valid credentials.
-
-Test Environment:
-    - Switch configuration from environment variables
-    - Rate limiting: 5 attempts per 5 minutes
-
-Test Categories:
-    1. Successful logout with token validation
-    2. Invalid token handling
-    3. Network error handling
-    4. Token reuse prevention
-
-Note: These tests require the --run-integration flag:
-    python -m pytest tests/test_logout_integration.py -v --run-integration
-"""
 import pytest
-from m4300api_helpers.login.login import login
-from m4300api_helpers.logout.logout import logout
+from m4300api_helpers.login import login
+from m4300api_helpers.logout import logout
+
 
 @pytest.fixture
 def auth_token(switch_config):
@@ -28,78 +12,70 @@ def auth_token(switch_config):
     print(f"switch_config keys: {switch_config.keys()}")
     print(f"switch_config: {switch_config}")
     result = login(
-        switch_config["base_url"],
-        switch_config["username"],
-        switch_config["password"]
+        switch_config["base_url"], switch_config["username"], switch_config["password"]
     )
-    return result["login"]["token"]
+    return result["data"]["token"]
+
 
 @pytest.mark.integration
-def test_live_logout_success(auth_token, switch_config):
+def test_live_logout_success(switch_config, auth_token):
     """Test successful logout with valid token on live switch.
-    
+
     Verifies:
         - Successful API connection
         - Valid JSON response
         - Response structure
         - Token invalidation
     """
-    result = logout(
-        switch_config["base_url"],
-        auth_token
-    )
-    
+    result = logout(switch_config["base_url"], auth_token)
+
     # Verify response structure
-    assert "logout" in result
+    assert "data" in result
     assert "resp" in result
+    assert result["data"] == {}  # Empty object as specified in API
     assert result["resp"]["status"] == "success"
     assert result["resp"]["respCode"] == 0
-    
-    # Verify token is invalidated by attempting reuse
-    with pytest.raises(RuntimeError, match="Logout failed:"):
-        logout(switch_config["base_url"], auth_token)
+
 
 @pytest.mark.integration
-def test_live_logout_invalid_token(switch_config):
-    """Test logout failure with invalid token on live switch.
-    
+def test_live_logout_expired_token(switch_config):
+    """Test logout with expired token on live switch.
+
     Verifies:
-        - Invalid token detection
+        - Error handling
         - Error message format
         - RuntimeError exception
     """
-    with pytest.raises(RuntimeError, match="Logout failed:"):
-        logout(
-            switch_config["base_url"],
-            "invalid_token_123"
-        )
+    expired_token = "expired_token_123"
+    with pytest.raises(RuntimeError, match="Logout failed: Invalid token"):
+        logout(switch_config["base_url"], expired_token)
+
 
 @pytest.mark.integration
-def test_live_logout_expired_token(auth_token, switch_config):
-    """Test logout with already logged out token.
-    
+def test_live_logout_invalid_url(switch_config, auth_token):
+    """Test logout with invalid URL on live switch.
+
     Verifies:
-        - Expired token detection
+        - Error handling
         - Error message format
         - RuntimeError exception
     """
-    # First logout to invalidate token
+    with pytest.raises(RuntimeError, match="Logout failed: Connection error"):
+        logout("https://invalid.url:8443", auth_token)
+
+
+@pytest.mark.integration
+def test_live_logout_double_logout(switch_config, auth_token):
+    """Test double logout with same token on live switch.
+
+    Verifies:
+        - Error handling
+        - Error message format
+        - RuntimeError exception
+    """
+    # First logout should succeed
     logout(switch_config["base_url"], auth_token)
-    
-    # Attempt to reuse invalidated token
-    with pytest.raises(RuntimeError, match="Logout failed:"):
-        logout(switch_config["base_url"], auth_token)
 
-@pytest.mark.integration
-def test_live_logout_invalid_url(auth_token, switch_config):
-    """Test connection failure with invalid URL.
-    
-    Verifies:
-        - Network error handling
-        - Connection timeout
-        - Error message format
-    """
-    # Modify port to create invalid URL
-    base_url = switch_config["base_url"].replace(":8443", ":9999")
-    with pytest.raises(RuntimeError, match="Logout failed:"):
-        logout(base_url, auth_token)
+    # Second logout should fail with invalid token
+    with pytest.raises(RuntimeError, match="Logout failed: Invalid token"):
+        logout(switch_config["base_url"], auth_token)

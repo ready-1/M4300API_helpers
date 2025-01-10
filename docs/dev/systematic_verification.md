@@ -122,7 +122,7 @@ The M4300 API returns responses that may appear malformed in test output but are
 # What you see in test output (appears to have missing commas):
 {
     "login":    {
-        "token":    "abc123"    
+        "token":    "abc123"
         "expire":   "86400"     # No comma!
     }                          # No comma!
     "resp": {
@@ -160,7 +160,7 @@ The M4300 API returns responses that may appear malformed in test output but are
    assert isinstance(response, dict)
    assert "resp" in response
    assert response["resp"]["status"] == "success"
-   
+
    # Bad - Don't try to fix format based on how it looks
    # response_text = response_text.replace("}\n", "},\n")  # DON'T DO THIS
    ```

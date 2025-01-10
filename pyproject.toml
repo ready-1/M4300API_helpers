@@ -1,31 +1,67 @@
 [tool.poetry]
 name = "m4300api-helpers"
 version = "0.1.0"
-description = "Helper tools for M4300 API"
-authors = ["Your Name <you@example.com>"]
+description = "Helper modules for M4300 switch API endpoints"
+authors = ["Your Name <your.email@example.com>"]
 readme = "README.md"
 packages = [{include = "m4300api_helpers", from = "src"}]
 
 [tool.poetry.dependencies]
 python = "^3.12"
 requests = "^2.31.0"
-pyyaml = "^6.0.1"
-rich = "^13.7.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0.0"
-pytest-cov = "^4.1.0"
 pytest-mock = "^3.12.0"
-python-dotenv = "^1.0.1"
-poetry-dotenv-plugin = "^0.2.0"
-bandit = "^1.8.0"
-mypy = "^1.14.1"
+black = "^24.1.0"
+flake8 = "^7.0.0"
+flake8-docstrings = "^1.7.0"
+mypy = "^1.8.0"
+bandit = "^1.7.7"
+pre-commit = "^3.6.0"
+types-requests = "^2.31.0"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
-[tool.poetry.scripts]
-m4300-validate = "m4300api_helpers.cli:main"
-m4300-generate-swagger = "m4300api_helpers.generate_swagger:main"
-m4300-generate-markdown = "m4300api_helpers.generate_markdown:main"
+[tool.bandit]
+exclude_dirs = ["tests"]
+skips = ["B101"]
+
+[tool.pytest.ini_options]
+markers = [
+    "integration: marks tests as integration tests",
+]
+
+[tool.mypy]
+python_version = "3.12"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+
+[tool.black]
+line-length = 88
+target-version = ['py312']
+include = '\.pyi?$'
+
+[tool.flake8]
+max-line-length = 88
+extend-ignore = ["E203"]
+per-file-ignores = [
+    "__init__.py:F401",
+    "tests/*:D100,D101,D102,D103"
+]

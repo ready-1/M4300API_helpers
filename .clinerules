@@ -4,7 +4,9 @@ CRITICAL_RULES {
     REQUIRED: Handle errors systematically
     FORBIDDEN: Skip validation steps
     FORBIDDEN: Make code changes from "???" prompts
+    FORBIDDEN: Edit code on main branch
     NON_NEGOTIABLE: Treat "???" prefix as information-only inquiry
+    NON_NEGOTIABLE: All code changes must be made in feature branches
 }
 
 WORKFLOW {
@@ -14,19 +16,19 @@ WORKFLOW {
         REQUIRED: Test behavior
         FORBIDDEN: Make assumptions
     }
-    
+
     PLAN {
         REQUIRED: Identify risks
         REQUIRED: Consider impacts
         REQUIRED: Note dependencies
     }
-    
+
     EXECUTE {
         REQUIRED: One change at a time
         REQUIRED: Follow test plan
         REQUIRED: Document changes
     }
-    
+
     VERIFY {
         REQUIRED: Run all tests
         REQUIRED: Check documentation
@@ -207,7 +209,7 @@ MCP_INTEGRATION {
 
 DEFERRED {
     NOTE: "Features for post-release"
-    
+
     FEATURES [
         - Performance monitoring
         - Extended documentation
