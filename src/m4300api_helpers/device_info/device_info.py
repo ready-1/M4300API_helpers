@@ -18,6 +18,7 @@ from .. import ApiResult, ResponseData
 # Default timeout for API requests (in seconds)
 DEFAULT_TIMEOUT = 10
 
+
 class TemperatureSensor(TypedDict):
     """Temperature sensor information.
 
@@ -39,6 +40,7 @@ class TemperatureSensor(TypedDict):
     sensorDesc: str
     sensorTemp: int
     sensorState: Literal[0, 1, 2, 3, 4, 5, 6]
+
 
 class DeviceInfo(TypedDict):
     """Device information and status.
@@ -77,8 +79,10 @@ class DeviceInfo(TypedDict):
     rxData: int
     txData: int
 
+
 # Type alias for device info endpoint response
 DeviceInfoResult = ApiResult[DeviceInfo]
+
 
 def get_device_info(base_url: str, token: str) -> DeviceInfoResult:
     """Get device information from M4300 switch.

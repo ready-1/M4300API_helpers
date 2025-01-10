@@ -6,4 +6,4 @@ invalidate the current authentication token.
 
 from .logout import logout, LogoutData, LogoutResult
 
-__all__ = ['logout', 'LogoutData', 'LogoutResult']
+__all__ = ["logout", "LogoutData", "LogoutResult"]

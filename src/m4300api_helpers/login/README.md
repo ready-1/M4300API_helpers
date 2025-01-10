@@ -22,11 +22,11 @@ try:
         username="admin",
         password="password123"
     )
-    
+
     # Extract token for subsequent requests
     auth_token = result["login"]["token"]
     token_expiry = result["login"]["expire"]  # in seconds (86400 = 24 hours)
-    
+
 except ValueError as e:
     print(f"Invalid parameters: {e}")
 except RuntimeError as e:

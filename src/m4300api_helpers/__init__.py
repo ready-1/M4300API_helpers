@@ -10,6 +10,7 @@ consistent error handling and response structure across all endpoints.
 
 from typing import TypedDict, Literal, Generic, TypeVar
 
+
 class ResponseData(TypedDict):
     """Standard API response data structure.
 
@@ -23,11 +24,13 @@ class ResponseData(TypedDict):
     respCode: int
     respMsg: str
 
-T = TypeVar('T')
+
+T = TypeVar("T")
+
 
 class ApiResult(TypedDict, Generic[T]):
     """Generic API result type.
-    
+
     All API responses follow this structure with endpoint-specific
     data in the data field and standard response data in resp.
 
@@ -35,6 +38,6 @@ class ApiResult(TypedDict, Generic[T]):
         data: Endpoint-specific response data
         resp: Standard response status information
     """
-    
+
     data: T
     resp: ResponseData

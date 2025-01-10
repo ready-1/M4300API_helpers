@@ -20,6 +20,7 @@ import requests
 from requests.exceptions import RequestException
 from .. import ApiResult, ResponseData
 
+
 class LogoutData(TypedDict):
     """Logout response data structure.
 
@@ -27,13 +28,16 @@ class LogoutData(TypedDict):
         This is an empty type as the logout endpoint returns
         an empty object for future extensibility.
     """
+
     pass
+
 
 # Type alias for logout endpoint response
 LogoutResult = ApiResult[LogoutData]
 
 # Default timeout for API requests (in seconds)
 DEFAULT_TIMEOUT = 10
+
 
 def logout(base_url: str, token: str) -> LogoutResult:
     """Logout from M4300 switch and invalidate authentication token.

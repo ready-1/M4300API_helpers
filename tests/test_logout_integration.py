@@ -12,9 +12,7 @@ def auth_token(switch_config):
     print(f"switch_config keys: {switch_config.keys()}")
     print(f"switch_config: {switch_config}")
     result = login(
-        switch_config["base_url"],
-        switch_config["username"],
-        switch_config["password"]
+        switch_config["base_url"], switch_config["username"], switch_config["password"]
     )
     return result["data"]["token"]
 
@@ -22,7 +20,7 @@ def auth_token(switch_config):
 @pytest.mark.integration
 def test_live_logout_success(switch_config, auth_token):
     """Test successful logout with valid token on live switch.
-    
+
     Verifies:
         - Successful API connection
         - Valid JSON response
@@ -30,7 +28,7 @@ def test_live_logout_success(switch_config, auth_token):
         - Token invalidation
     """
     result = logout(switch_config["base_url"], auth_token)
-    
+
     # Verify response structure
     assert "data" in result
     assert "resp" in result
@@ -42,7 +40,7 @@ def test_live_logout_success(switch_config, auth_token):
 @pytest.mark.integration
 def test_live_logout_expired_token(switch_config):
     """Test logout with expired token on live switch.
-    
+
     Verifies:
         - Error handling
         - Error message format
@@ -56,7 +54,7 @@ def test_live_logout_expired_token(switch_config):
 @pytest.mark.integration
 def test_live_logout_invalid_url(switch_config, auth_token):
     """Test logout with invalid URL on live switch.
-    
+
     Verifies:
         - Error handling
         - Error message format
@@ -69,7 +67,7 @@ def test_live_logout_invalid_url(switch_config, auth_token):
 @pytest.mark.integration
 def test_live_logout_double_logout(switch_config, auth_token):
     """Test double logout with same token on live switch.
-    
+
     Verifies:
         - Error handling
         - Error message format
@@ -77,7 +75,7 @@ def test_live_logout_double_logout(switch_config, auth_token):
     """
     # First logout should succeed
     logout(switch_config["base_url"], auth_token)
-    
+
     # Second logout should fail with invalid token
     with pytest.raises(RuntimeError, match="Logout failed: Invalid token"):
         logout(switch_config["base_url"], auth_token)

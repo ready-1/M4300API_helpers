@@ -79,7 +79,7 @@ paths:
                     $ref: '#/components/schemas/general_responses_code'
                   device_info:
                     $ref: '#/components/schemas/device_info'
-          
+
   /device_name:
     get:
       tags:

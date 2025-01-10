@@ -9,9 +9,7 @@ from m4300api_helpers.device_info import get_device_info
 def auth_token(switch_config):
     """Fixture to get valid auth token for testing."""
     result = login(
-        switch_config["base_url"],
-        switch_config["username"],
-        switch_config["password"]
+        switch_config["base_url"], switch_config["username"], switch_config["password"]
     )
     return result["data"]["token"]
 
@@ -19,7 +17,7 @@ def auth_token(switch_config):
 @pytest.mark.integration
 def test_live_device_info_success(switch_config, auth_token):
     """Test successful device info retrieval with valid token on live switch.
-    
+
     Verifies:
         - Successful API connection
         - Valid JSON response
@@ -28,13 +26,13 @@ def test_live_device_info_success(switch_config, auth_token):
         - Field types
     """
     result = get_device_info(switch_config["base_url"], auth_token)
-    
+
     # Verify response structure
     assert "data" in result
     assert "resp" in result
     assert result["resp"]["status"] == "success"
     assert result["resp"]["respCode"] == 0
-    
+
     # Verify required fields
     device_info = result["data"]
     assert "serialNumber" in device_info
@@ -52,7 +50,7 @@ def test_live_device_info_success(switch_config, auth_token):
     assert "bootVersion" in device_info
     assert "rxData" in device_info
     assert "txData" in device_info
-    
+
     # Verify field types
     assert isinstance(device_info["serialNumber"], str)
     assert isinstance(device_info["macAddr"], str)
@@ -74,7 +72,7 @@ def test_live_device_info_success(switch_config, auth_token):
 @pytest.mark.integration
 def test_live_device_info_expired_token(switch_config):
     """Test device info with expired token on live switch.
-    
+
     Verifies:
         - Error handling
         - Error message format
@@ -88,7 +86,7 @@ def test_live_device_info_expired_token(switch_config):
 @pytest.mark.integration
 def test_live_device_info_invalid_url(switch_config, auth_token):
     """Test device info with invalid URL on live switch.
-    
+
     Verifies:
         - Error handling
         - Error message format

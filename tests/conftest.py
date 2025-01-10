@@ -6,7 +6,7 @@ import pytest
 @pytest.fixture
 def switch_config():
     """Test switch configuration.
-    
+
     Returns:
         Dictionary containing test switch configuration:
         {
@@ -18,14 +18,14 @@ def switch_config():
     return {
         "base_url": "https://192.168.99.92:8443",
         "username": "admin",
-        "password": "password123"
+        "password": "password123",
     }
 
 
 @pytest.fixture
 def test_token():
     """Test authentication token.
-    
+
     Returns:
         String containing test authentication token
     """
@@ -35,7 +35,7 @@ def test_token():
 @pytest.fixture
 def mock_success_response():
     """Mock successful device info response.
-    
+
     Returns:
         Dictionary containing mock device info response
     """
@@ -49,12 +49,7 @@ def mock_success_response():
             "numOfActivePorts": 48,
             "memoryUsage": "90.58%",
             "cpuUsage": "17.53%",
-            "fanState": [
-                {
-                    "FAN-1": "Operational",
-                    "FAN-2": "Operational"
-                }
-            ],
+            "fanState": [{"FAN-1": "Operational", "FAN-2": "Operational"}],
             "poeState": True,
             "upTime": "00 Days 01 Hrs 07 Mins 11 Secs",
             "temperatureSensors": [
@@ -62,28 +57,24 @@ def mock_success_response():
                     "sensorNum": 1,
                     "sensorDesc": "MAC-A",
                     "sensorTemp": 45,
-                    "sensorState": 1
+                    "sensorState": 1,
                 },
                 {
                     "sensorNum": 2,
                     "sensorDesc": "MAC-B",
                     "sensorTemp": 48,
-                    "sensorState": 1
+                    "sensorState": 1,
                 },
                 {
                     "sensorNum": 3,
                     "sensorDesc": "System",
                     "sensorTemp": 42,
-                    "sensorState": 1
-                }
+                    "sensorState": 1,
+                },
             ],
             "bootVersion": "B1.0.0.17",
             "rxData": 123456789,
-            "txData": 987654321
+            "txData": 987654321,
         },
-        "resp": {
-            "status": "success",
-            "respCode": 0,
-            "respMsg": "Operation success"
-        }
+        "resp": {"status": "success", "respCode": 0, "respMsg": "Operation success"},
     }

@@ -6,4 +6,4 @@ switch including hardware details, operational status, and sensor readings.
 
 from .device_info import get_device_info, DeviceInfo, TemperatureSensor
 
-__all__ = ['get_device_info', 'DeviceInfo', 'TemperatureSensor']
+__all__ = ["get_device_info", "DeviceInfo", "TemperatureSensor"]

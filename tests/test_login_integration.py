@@ -7,7 +7,7 @@ from m4300api_helpers.login import login
 @pytest.mark.integration
 def test_live_login_success(switch_config):
     """Test successful login with valid credentials on live switch.
-    
+
     Verifies:
         - Successful API connection
         - Valid JSON response
@@ -16,11 +16,9 @@ def test_live_login_success(switch_config):
         - Token expiration
     """
     result = login(
-        switch_config["base_url"],
-        switch_config["username"],
-        switch_config["password"]
+        switch_config["base_url"], switch_config["username"], switch_config["password"]
     )
-    
+
     # Verify response structure
     assert "data" in result
     assert "resp" in result
@@ -28,12 +26,12 @@ def test_live_login_success(switch_config):
     assert "expire" in result["data"]
     assert result["resp"]["status"] == "success"
     assert result["resp"]["respCode"] == 0
-    
+
     # Verify token format
     token = result["data"]["token"]
     assert isinstance(token, str)
     assert len(token) > 0
-    
+
     # Verify expiration
     expire = result["data"]["expire"]
     assert expire == "86400"  # 24 hours in seconds
@@ -42,7 +40,7 @@ def test_live_login_success(switch_config):
 @pytest.mark.integration
 def test_live_login_invalid_password(switch_config):
     """Test login with invalid password on live switch.
-    
+
     Verifies:
         - Error handling
         - Error message format
@@ -55,7 +53,7 @@ def test_live_login_invalid_password(switch_config):
 @pytest.mark.integration
 def test_live_login_invalid_username(switch_config):
     """Test login with invalid username on live switch.
-    
+
     Verifies:
         - Error handling
         - Error message format
@@ -68,7 +66,7 @@ def test_live_login_invalid_username(switch_config):
 @pytest.mark.integration
 def test_live_login_invalid_url(switch_config):
     """Test login with invalid URL on live switch.
-    
+
     Verifies:
         - Error handling
         - Error message format
@@ -78,5 +76,5 @@ def test_live_login_invalid_url(switch_config):
         login(
             "https://invalid.url:8443",
             switch_config["username"],
-            switch_config["password"]
+            switch_config["password"],
         )

@@ -48,7 +48,7 @@ After script execution:
 # example "POST /api/v1/login"
 
 ==== PDF DOCUMENTATION ====
-# oficial documentation of the endpoint with 
+# oficial documentation of the endpoint with
 # Method
 # URL
 # Headers
