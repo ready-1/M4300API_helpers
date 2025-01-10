@@ -1,0 +1,123 @@
+==== ENDPOINT ====
+GET /api/v1/device_info
+
+==== PDF DOCUMENTATION ====
+2.1 GET /device_info
+Get the device information
+REQUEST
+No request parameters
+RESPONSE
+STATUS CODE - 200: successful operation
+RESPONSE MODEL - application/json
+{
+resp {
+status enum ALLOWED:success, failure
+respCode integer
+respMsg string
+}
+device_info {
+name string Switch display name
+serialNumber string Switch Serial Number
+macAddr string Switch MAC Address
+model string Switch Model Number
+lanIpAddress string LAN IP Address
+swVer string Active firmware version
+lastReboot string Time of last reboot with time zone information
+numOfPorts integer Total number of switch ports available
+numOfActivePorts integer Total number of currently active switch ports
+rstpState boolean RSTP State
+memoryUsed string Amount of RAM used in KBs
+memoryUsage string % of memory usage
+cpuUsage string % of CPU usage
+fanState string Fan status
+poeState boolean PoE enabled status
+upTime string Up time of device
+temperatureSensors [{
+Array of object:
+sensorNum integer Temperature sensor SKU
+sensorDesc integer Description of the temperature sensor
+sensorTemp string Temperature sensor temperature in Celcius
+sensorState enum ALLOWED:0, 1, 2, 3, 4, 5, 6
+Temperature sensor state:
+* `0` = NONE
+* `1` = NORMAL
+* `2` = WARNING
+* `3` = CRITICAL
+* `4` = SHUTDOWN
+* `5` = NOT PRESENT
+* `6` = NOT OPERATIONAL
+}]
+rxData txData adminPoePower bootVersion string Bootcode version of the Switch.
+integer Total number of bytes received
+integer Total number of bytes transmitted
+integer Admin PoE power as selected from Web UI (unit is mW)
+}
+}
+
+==== WORKING PYTHON CODE FROM POSTMAN ====
+'''
+import requests
+
+url = "https://192.168.99.92:8443/api/v1/device_info"
+
+payload = {}
+headers = {
+  'Accept': 'application/json',
+  'Authorization': 'Bearer d37eaa8dbc1fe28792e1d5230d52334c603f5e8e13a8e653a147857786f815b8d643ebf2f12971af4b0b4b1e1196103907e3578a4ef025225a073541f4ef9216'
+}
+
+response = requests.request("GET", url, headers=headers, data=payload)
+
+print(response.text)
+
+
+'''
+
+==== ACTUAL LIVE RESPONSE FROM POSTMAN FOR THE ABOVE CODE ====
+Status: HTTP 1.1 200 OK
+'''
+{
+	"deviceInfo":	{
+		"serialNumber":	"53L69C5FF001D",
+		"macAddr":	"BC:A5:11:A0:7E:1D",
+		"model":	"M4300-52G-PoE+",
+		"swVer":	"12.0.19.6",
+		"numOfPorts":	52,
+		"numOfActivePorts":	1,
+		"memoryUsage":	"90.58%",
+		"cpuUsage":	"17.53%",
+		"fanState":	[{
+				"FAN-1":	"Operational",
+				"FAN-2":	"Operational",
+				"FAN-3":	"Operational",
+				"FAN-4":	"Operational"
+			}],
+		"poeState":	true,
+		"upTime":	"00 Days 01 Hrs 07 Mins 11 Secs",
+		"temperatureSensors":	[{
+				"sensorNum":	1,
+				"sensorDesc":	"MAC-A",
+				"sensorTemp":	23,
+				"sensorState":	1
+			}, {
+				"sensorNum":	2,
+				"sensorDesc":	"MAC-B",
+				"sensorTemp":	31,
+				"sensorState":	1
+			}, {
+				"sensorNum":	3,
+				"sensorDesc":	"System",
+				"sensorTemp":	30,
+				"sensorState":	1
+			}],
+		"bootVersion":	"B1.0.0.17",
+		"rxData":	9269183,
+		"txData":	2814740
+	},
+	"resp":	{
+		"status":	"success",
+		"respCode":	0,
+		"respMsg":	"Operation success"
+	}
+}
+'''
