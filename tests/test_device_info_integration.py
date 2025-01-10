@@ -54,7 +54,10 @@ def test_live_device_info_success(auth_token, switch_config):
     
     # Verify device info fields
     device_info = result["deviceInfo"]
-    assert isinstance(device_info["serialNumber"], str)
+    
+    # Verify serial number format (e.g., "53L69C5FF001D")
+    assert len(device_info["serialNumber"]) > 0
+    assert device_info["serialNumber"].isalnum()  # Only letters and numbers
     assert isinstance(device_info["macAddr"], str)
     assert isinstance(device_info["model"], str)
     assert isinstance(device_info["swVer"], str)
@@ -70,6 +73,42 @@ def test_live_device_info_success(auth_token, switch_config):
     assert isinstance(device_info["rxData"], int)
     assert isinstance(device_info["txData"], int)
     
+    # Verify fan state structure
+    assert len(device_info["fanState"]) > 0
+    fan_state = device_info["fanState"][0]
+    for fan_name, fan_status in fan_state.items():
+        assert fan_name.startswith("FAN-")
+        assert fan_status in ["Operational", "Not Operational"]
+
+    # Verify percentage formats
+    assert device_info["memoryUsage"].endswith("%")
+    assert float(device_info["memoryUsage"].rstrip("%")) >= 0
+    assert float(device_info["memoryUsage"].rstrip("%")) <= 100
+    
+    assert device_info["cpuUsage"].endswith("%")
+    assert float(device_info["cpuUsage"].rstrip("%")) >= 0
+    assert float(device_info["cpuUsage"].rstrip("%")) <= 100
+
+    # Verify MAC address format (XX:XX:XX:XX:XX:XX)
+    mac_parts = device_info["macAddr"].split(":")
+    assert len(mac_parts) == 6
+    for part in mac_parts:
+        assert len(part) == 2
+        int(part, 16)  # Verify valid hex
+
+    # Verify uptime format
+    uptime = device_info["upTime"]
+    assert "Days" in uptime
+    assert "Hrs" in uptime
+    assert "Mins" in uptime
+    assert "Secs" in uptime
+    parts = uptime.split()
+    assert len(parts) == 8
+    assert int(parts[0]) >= 0  # Days
+    assert 0 <= int(parts[2]) <= 23  # Hours
+    assert 0 <= int(parts[4]) <= 59  # Minutes
+    assert 0 <= int(parts[6]) <= 59  # Seconds
+
     # Verify temperature sensors
     for sensor in device_info["temperatureSensors"]:
         assert isinstance(sensor["sensorNum"], int)
@@ -77,6 +116,8 @@ def test_live_device_info_success(auth_token, switch_config):
         assert isinstance(sensor["sensorTemp"], int)
         assert isinstance(sensor["sensorState"], int)
         assert 0 <= sensor["sensorState"] <= 6
+        assert 0 <= sensor["sensorTemp"] <= 100  # Reasonable temp range
+        assert sensor["sensorDesc"] in ["MAC-A", "MAC-B", "System"]
 
 @pytest.mark.integration
 def test_live_device_info_invalid_token(switch_config):
