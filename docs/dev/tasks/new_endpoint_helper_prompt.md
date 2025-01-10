@@ -1,124 +1,140 @@
-# New Endpoint Helper Creation
+# New Endpoint Helper Creation Prompt
 
-## Request Format
+Use this prompt template to request creation of a new endpoint helper:
+
 ```
-Create new endpoint helper using [info_doc_path]
+Please create a new endpoint helper based on the following:
+
+1. Info Doc:
+docs/dev/mcp_info/[info doc filename]
+
+2. Current Branch:
+[Name of feature branch you've created and checked out]
+
+3. Endpoint:
+[Endpoint path, e.g., "/device_info"]
+
+Please follow these requirements:
+- Use make_api_call and build_switch_url helpers according to docs/dev/components/using_make_api_call.md
+- Follow architecture guidelines in docs/dev/architecture.md
+- Implement systematic verification from docs/dev/systematic_verification.md
+- Create both implementation and tests
+- Follow endpoint helper structure from existing examples
+- Include comprehensive error handling
+- Add type hints and documentation
+- Ensure all pre-commit hooks pass
+
+The implementation should include:
+1. Helper module with proper structure
+2. Unit tests with mocked responses
+3. Integration tests with real API calls
+4. README.md with usage examples
+5. Type definitions for request/response data
+6. Error handling for all cases
+7. Documentation following project standards
+
+Please proceed step by step, waiting for confirmation after each file creation or modification.
 ```
 
-Example:
+## Example Usage
+
 ```
-Create new endpoint helper using docs/dev/mcp_info/POST_login_info_doc.txt
+Please create a new endpoint helper based on the following:
+
+1. Info Doc:
+docs/dev/mcp_info/info_dog_GET_device_info.txt
+
+2. Current Branch:
+endpoint/device_info
+
+3. Endpoint:
+/device_info
+
+[Rest of requirements as above...]
 ```
 
-## Automated Setup
-The `create_endpoint_helper.sh` script will:
-1. Create properly named branch (e.g., endpoint/login)
-2. Set up directory structure
-3. Create template files:
-   - Helper implementation (index.ts)
-   - Tests (index.test.ts)
-   - Documentation (README.md)
-   - Copy info doc for reference
+## Expected Implementation Steps
 
-## Implementation Steps
-After script execution:
+The assistant will:
 
-1. **Parse Info Document**
-   - Review endpoint_info.txt in helper directory
-   - Extract interfaces and types
-   - Document request/response formats
-   - Note error cases and handling
+1. Analyze Requirements
+   - Read info doc from specified file
+   - Identify request/response patterns
+   - Note error cases
+   - Plan implementation approach
 
-2. **Implementation**
-   - Complete helper function
+2. Create Type Definitions
+   - Define response TypedDict
+   - Add request type hints
+   - Document type structures
+
+3. Implement Helper
+   - Create helper module
+   - Use make_api_call pattern
    - Add error handling
-   - Implement tests
-   - Update documentation
+   - Include documentation
 
-3. **Validation**
-   - Run validate_endpoint.sh
-   - Run validate_helper.sh
-   - Fix any warnings
-   - Test with live API
+4. Add Tests
+   - Create unit tests
+   - Add integration tests
+   - Mock responses
+   - Test error cases
 
-## Information Document Format
-```
-==== ENDPOINT ====
-# endpoint Method and URL
-# example "POST /api/v1/login"
+5. Add Documentation
+   - Create README
+   - Add usage examples
+   - Document error handling
+   - Include type information
 
-==== PDF DOCUMENTATION ====
-# oficial documentation of the endpoint with
-# Method
-# URL
-# Headers
-# Parameters
-# Request Body
-# Response Format
-# Valid Values
+6. Verify Implementation
+   - Run pre-commit hooks
+   - Fix any issues
+   - Commit changes
+   - Run tests
 
-==== WORKING PYTHON CODE FROM POSTMAN ====
-'''
-# sample python code
-
-'''
-
-==== ACTUAL LIVE RESPONSE FROM POSTMAN FOR THE ABOVE CODE ====
-Status: HTTP 1.1 200 OK
-'''
-# sample json response
-
-
-```
-
-## Parsing Instructions
-1. Headers:
-   - Extract all required headers
-   - Note any conditional headers
-   - Document header format requirements
-
-2. Parameters:
-   - List all query parameters
-   - Document parameter types
-   - Note required vs optional
-   - Include validation rules
-
-3. Request Body:
-   - Parse full payload structure
-   - Document field requirements
-   - Note data type constraints
-   - Include example values
-
-4. Response Format:
-   - Document success response structure
-   - Note field types and formats
-   - Include conditional fields
-   - Document metadata if present
-
-5. Error Cases:
-   - List all possible error codes
-   - Document error response formats
-   - Include trigger conditions
-   - Note recovery steps
-
-6. Documentation References:
-   - Extract PDF section numbers
-   - Note relevant page ranges
-   - Link to Postman examples
-   - Document any special cases
+The assistant will wait for confirmation after each step before proceeding.
 
 ## Validation Checklist
-- [ ] Branch name follows convention
-- [ ] Documentation complete
-- [ ] Tests written
-- [ ] Live API validated
-- [ ] Error handling implemented
-- [ ] Helper interface documented
-- [ ] All validation scripts pass
 
-## Notes
-- Follow one branch per endpoint rule
-- Document all key decisions
-- Handle all error cases
-- Maintain type safety
-- Update examples
+The assistant will validate:
+
+1. Code Structure
+   - Proper module organization
+   - Clear separation of concerns
+   - Consistent naming
+   - Type safety
+
+2. Error Handling
+   - All error cases covered
+   - Clear error messages
+   - Proper error propagation
+   - Response validation
+
+3. Testing
+   - Unit test coverage
+   - Integration tests
+   - Error case testing
+   - Mock responses
+
+4. Documentation
+   - Clear usage examples
+   - Error documentation
+   - Type information
+   - Response format
+
+5. Quality Checks
+   - Pre-commit hooks pass
+   - Type checking passes
+   - Tests pass
+   - Documentation complete
+
+## Response Format
+
+The assistant will:
+1. Think through requirements
+2. Propose next step
+3. Execute step with appropriate tool
+4. Wait for confirmation
+5. Proceed to next step
+
+Each step will be clearly documented and validated against project requirements.
